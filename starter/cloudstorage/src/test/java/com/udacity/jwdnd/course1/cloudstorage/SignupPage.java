@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import com.udacity.jwdnd.course1.cloudstorage.models.UserUiDto;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -35,15 +36,12 @@ public class SignupPage {
     }
 
     public void registerUser(
-            String FirstName,
-            String LastName,
-            String Username,
-            String Password
+            UserUiDto user
     ) {
-        inputFirstName.sendKeys(FirstName);
-        inputLastName.sendKeys(LastName);
-        inputUserName.sendKeys(Username);
-        inputPassword.sendKeys(Password);
+        inputFirstName.sendKeys(user.getFirstName());
+        inputLastName.sendKeys(user.getLastName());
+        inputUserName.sendKeys(user.getUserName());
+        inputPassword.sendKeys(user.getPassword());
     }
 
     public String getSuccessMsg() {
@@ -58,5 +56,7 @@ public class SignupPage {
         submitButton.click();
     }
 
-    public void goToLogin() { loginLink.click(); }
+    public void goToLogin() {
+        loginLink.click();
+    }
 }

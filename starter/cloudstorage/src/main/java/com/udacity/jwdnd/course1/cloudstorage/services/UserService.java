@@ -9,9 +9,11 @@ import java.util.Base64;
 
 @Service
 public class UserService {
+    // TODO: 30/05/2021 to be tested
     private final UserMapper userMapper;
     private final HashService hashService;
 
+    // TODO: 30/05/2021 should use repository instead of mapper
     public UserService(UserMapper userMapper, HashService hashService) {
         this.userMapper = userMapper;
         this.hashService = hashService;

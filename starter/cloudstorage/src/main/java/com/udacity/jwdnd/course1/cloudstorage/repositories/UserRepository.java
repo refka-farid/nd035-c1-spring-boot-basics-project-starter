@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 @Repository
 public class UserRepository {
+    // TODO: 30/05/2021 Use logging
     private final UserMapper mapper;
 
     public UserRepository(UserMapper mapper) {

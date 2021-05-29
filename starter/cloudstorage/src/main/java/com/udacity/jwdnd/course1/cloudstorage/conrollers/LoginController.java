@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/login")
 public class LoginController {
+    // TODO: 30/05/2021 to be tested
 
     @GetMapping()
     public String loginView() {

@@ -16,6 +16,10 @@ public class UserRepository {
         this.mapper = mapper;
     }
 
+    public User get(String userName) {
+      return mapper.getUserByUserName(userName);
+    }
+
     public boolean add(User user) {
         int id = mapper.addUser(user);
         return id > 0;

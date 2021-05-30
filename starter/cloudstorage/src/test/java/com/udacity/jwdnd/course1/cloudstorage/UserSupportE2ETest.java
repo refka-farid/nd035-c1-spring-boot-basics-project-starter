@@ -88,7 +88,7 @@ class UserSupportE2ETest {
     }
 
     @Test
-    public void chech_loginShouldShowSuccess() {
+    public void check_loginShouldShowSuccess() {
         var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
@@ -98,8 +98,9 @@ class UserSupportE2ETest {
         loginPage = new LoginPage(driver);
         loginPage.loginUser("Francis", "1234Hashed");
         loginPage.submit();
-        WebDriverHelper.wait_10s(driver);
-        assertThat(loginPage.errorMsg.isDisplayed()).isTrue();
+        String redirected_url = driver.getCurrentUrl();
+        driver.get(redirected_url);
+        assertThat(redirected_url).contains("/home");
     }
 
     @Test
@@ -108,9 +109,9 @@ class UserSupportE2ETest {
         Assertions.assertEquals("Sign Up", driver.getTitle());
     }
 
-//	@Test
-//    public void getLoginPage() {
-//        driver.get("http://localhost:" + this.port + "/login");
-//        Assertions.assertEquals("Login", driver.getTitle());
-//    }
+	@Test
+    public void getLoginPage() {
+        driver.get("http://localhost:" + this.port + "/login");
+        Assertions.assertEquals("Login", driver.getTitle());
+    }
 }

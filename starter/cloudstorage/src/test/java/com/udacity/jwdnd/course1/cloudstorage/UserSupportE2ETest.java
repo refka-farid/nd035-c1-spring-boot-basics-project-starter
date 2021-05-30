@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage;
 
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.models.UserUiDto;
+import com.udacity.jwdnd.course1.cloudstorage.util.WebDriverHelper;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
@@ -11,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 import javax.inject.Inject;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,6 +26,7 @@ class UserSupportE2ETest {
 
     private static WebDriver driver;
     private SignupPage signupPage;
+    private LoginPage loginPage;
 
     @BeforeAll
     static void beforeAll() {
@@ -71,8 +74,32 @@ class UserSupportE2ETest {
     }
 
     @Test
-    public void check() {
-        // TODO: 30/05/2021 add two tests for login success and login fail
+    public void check_loginShouldShowError() {
+        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        signupPage.registerUser(user);
+        signupPage.submit();
+        signupPage.goToLogin();
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("Franci", "1234Hashed");
+        loginPage.submit();
+        assertThat(loginPage.errorMsg.isDisplayed()).isTrue();
+    }
+
+    @Test
+    public void chech_loginShouldShowSuccess() {
+        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        signupPage.registerUser(user);
+        signupPage.submit();
+        signupPage.goToLogin();
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("Francis", "1234Hashed");
+        loginPage.submit();
+        WebDriverHelper.wait_10s(driver);
+        assertThat(loginPage.errorMsg.isDisplayed()).isTrue();
     }
 
     @Test

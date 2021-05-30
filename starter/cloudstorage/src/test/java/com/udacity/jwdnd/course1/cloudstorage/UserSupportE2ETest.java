@@ -23,7 +23,6 @@ class UserSupportE2ETest {
 
     @Inject
     private UserMapper mapper;
-
     private static WebDriver driver;
     private SignupPage signupPage;
     private LoginPage loginPage;

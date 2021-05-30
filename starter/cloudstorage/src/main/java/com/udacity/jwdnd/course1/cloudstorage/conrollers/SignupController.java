@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
+import com.udacity.jwdnd.course1.cloudstorage.models.SignupResponseModel;
 import com.udacity.jwdnd.course1.cloudstorage.models.UserUiDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.signup.UserService;
 import org.springframework.stereotype.Controller;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/signup")
@@ -21,12 +23,14 @@ public class SignupController {
     }
 
     @GetMapping()
-    public String signupView() {
+    public String signupView(Model model) {
+        model.addAttribute("responseModel", new SignupResponseModel());
         return "signup";
     }
 
     @PostMapping()
-    public String signupUser(@ModelAttribute UserUiDto userUiDto, Model model) {
+    public ModelAndView signupUser(@ModelAttribute UserUiDto userUiDto) {
+
         String signupError = null;
 
         if (!userService.isUsernameAvailable(userUiDto.getUserName())) {
@@ -34,18 +38,22 @@ public class SignupController {
         }
 
         if (signupError == null) {
-            int rowsAdded = userService.createUser(userUiDto.toUser());
-            if (rowsAdded < 0) {
+            boolean rowsAdded = userService.createUser(userUiDto.toUser());
+            if (!rowsAdded) {
                 signupError = "There was an error signing you up. Please try again.";
             }
         }
 // TODO: 30/05/2021 should encapsulate model response
+        SignupResponseModel responseModel = new SignupResponseModel();
         if (signupError == null) {
-            model.addAttribute("signupSuccess", true);
+//            model.addAttribute("signupSuccess", true);
+            responseModel.setSuccessSignup(true);
         } else {
-            model.addAttribute("signupError", signupError);
+            responseModel.setErrorSignup(signupError);
+//            model.addAttribute("signupError", signupError);
         }
 
-        return "signup";
+//        return "signup";
+        return new ModelAndView("signup", "responseModel", responseModel);
     }
 }

@@ -13,7 +13,6 @@ import java.util.Base64;
 
 @Service
 public class HashService {
-    // TODO: 30/05/2021 to be tested
     private final Logger logger = LoggerFactory.getLogger(HashService.class);
 
     public String getHashedValue(String data, String salt) {

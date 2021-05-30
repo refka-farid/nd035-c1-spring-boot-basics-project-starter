@@ -18,7 +18,7 @@ public class UserUiDto {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.userName = removeWhiteSpaces(userName);
     }
 
     public String getPassword() {
@@ -47,5 +47,9 @@ public class UserUiDto {
 
     public User toUser() {
         return User.from(this.userName, this.password, this.firstName, this.lastName);
+    }
+
+    private String removeWhiteSpaces(String word) {
+        return word.replaceAll("\\s", "");
     }
 }

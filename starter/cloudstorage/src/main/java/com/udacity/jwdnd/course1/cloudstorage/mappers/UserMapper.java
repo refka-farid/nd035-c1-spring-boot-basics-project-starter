@@ -1,12 +1,12 @@
 package com.udacity.jwdnd.course1.cloudstorage.mappers;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.User;
+import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
     @Select("SELECT * FROM USERS WHERE username = #{userName}")
-    User getUserByUserName(String username);
+    User getUserByUserName(String userName);
 
     @Insert("INSERT INTO USERS (username, salt, hashedpassword, firstname, lastname) VALUES(#{userName}, #{salt}, #{hashedPassword}, #{firstName}, #{lastName})")
     @Options(useGeneratedKeys = true, keyProperty = "userId")

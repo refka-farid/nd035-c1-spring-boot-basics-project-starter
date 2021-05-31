@@ -1,8 +1,7 @@
-package com.udacity.jwdnd.course1.cloudstorage;
+package com.udacity.jwdnd.course1.cloudstorage.end2end;
 
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
-import com.udacity.jwdnd.course1.cloudstorage.models.UserUiDto;
-import com.udacity.jwdnd.course1.cloudstorage.util.WebDriverHelper;
+import com.udacity.jwdnd.course1.cloudstorage.models.SignupRequestDto;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
@@ -53,7 +52,7 @@ class UserSupportE2ETest {
 
     @Test
     void registerNewUserShouldShowSuccess() {
-        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
         String prevValue = signupPage.getSuccessMsg();
@@ -62,7 +61,7 @@ class UserSupportE2ETest {
 
     @Test
     void registerNewUserShouldShowError() {
-        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
         signupPage.registerUser(user);
@@ -74,7 +73,7 @@ class UserSupportE2ETest {
 
     @Test
     public void check_loginShouldShowError() {
-        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
         signupPage.goToLogin();
@@ -88,7 +87,7 @@ class UserSupportE2ETest {
 
     @Test
     public void check_loginShouldShowSuccess() {
-        var user = new UserUiDto("Francis", "1234Hashed", "Francis", "Babier");
+        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
         signupPage.goToLogin();

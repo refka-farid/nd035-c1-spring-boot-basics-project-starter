@@ -1,12 +1,14 @@
 package com.udacity.jwdnd.course1.cloudstorage.models;
 
-public class UserUiDto {
+import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+
+public class SignupRequestDto {
     private String userName;
     private String password;
     private String firstName;
     private String lastName;
 
-    public UserUiDto(String userName, String password, String firstName, String lastName) {
+    public SignupRequestDto(String userName, String password, String firstName, String lastName) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;

@@ -32,5 +32,4 @@ target/
 ### MacOs ###
 .DS_Store
 
-/src/main/resources/data/
-*-dev.properties
+/data/*.db

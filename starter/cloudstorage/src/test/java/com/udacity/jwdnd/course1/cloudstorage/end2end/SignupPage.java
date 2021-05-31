@@ -1,6 +1,6 @@
-package com.udacity.jwdnd.course1.cloudstorage;
+package com.udacity.jwdnd.course1.cloudstorage.end2end;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.UserUiDto;
+import com.udacity.jwdnd.course1.cloudstorage.models.SignupRequestDto;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,7 +36,7 @@ public class SignupPage {
     }
 
     public void registerUser(
-            UserUiDto user
+            SignupRequestDto user
     ) {
         inputFirstName.sendKeys(user.getFirstName());
         inputLastName.sendKeys(user.getLastName());

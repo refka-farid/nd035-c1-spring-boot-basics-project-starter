@@ -1,6 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.services.signup;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.User;
+import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import com.udacity.jwdnd.course1.cloudstorage.repositories.UserRepository;
 import com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.HashService;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public boolean isUsernameAvailable(String username) {
-        return userRepository.get(username) == null;
+        return userRepository.getOne(username) == null;
     }
 
     public boolean createUser(User user) {
@@ -30,6 +30,6 @@ public class UserService {
     }
 
     public User getUser(String username) {
-        return userRepository.get(username);
+        return userRepository.getOne(username);
     }
 }

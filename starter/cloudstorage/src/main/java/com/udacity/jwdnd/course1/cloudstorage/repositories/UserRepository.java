@@ -20,6 +20,7 @@ public class UserRepository {
     }
 
     public User getOne(String userName) {
+        logger.trace("getOne user " + userName);
         return mapper.getUserByUserName(userName);
     }
 

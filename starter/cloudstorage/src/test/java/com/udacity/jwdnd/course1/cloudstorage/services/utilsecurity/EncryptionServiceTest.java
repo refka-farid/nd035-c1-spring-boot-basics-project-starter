@@ -7,8 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EncryptionServiceTest {
 
-    EncryptionService sut;
-    String key = "HIxi7PbCRU9uIyET6sdGEg==";
+    private EncryptionService sut;
 
     @BeforeEach
     void setUp() {
@@ -16,14 +15,12 @@ class EncryptionServiceTest {
     }
 
     @Test
-    void encryptValueTest() {
-        String result = sut.encryptValue("azerty",key);
-        assertThat(result).isEqualTo("QVZBHys7I/JBawmZF/GxVQ==");
-    }
+    void encryptThenDecryptValueTest() {
+        final String key = RandomSalt.getBase64Encoded();
 
-    @Test
-    void decryptValueTest() {
-        String result = sut.decryptValue("QVZBHys7I/JBawmZF/GxVQ==",key);
+        String encryptedValue = sut.encryptValue("azerty", key);
+        String result = sut.decryptValue(encryptedValue, key);
         assertThat(result).isEqualTo("azerty");
     }
+
 }

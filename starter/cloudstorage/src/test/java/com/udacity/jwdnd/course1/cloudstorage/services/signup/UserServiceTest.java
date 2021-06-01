@@ -24,14 +24,14 @@ class UserServiceTest {
     }
 
     @Test
-    void isUsernameAvailable() {
+    void isUsernameAvailableTest() {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.isUsernameAvailable(user1.getUserName());
         verify(userRepository).getOne(user1.getUserName());
     }
 
     @Test
-    void createUser() {
+    void createUserTest() {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.createUser(user1);
         verify(hashServiceMock).getHashedValue(anyString(), anyString());
@@ -39,7 +39,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUser() {
+    void getUserTest() {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.getUser(user1.getUserName());
         verify(userRepository).getOne(user1.getUserName());

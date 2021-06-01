@@ -4,9 +4,12 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class RandomSalt {
+    private RandomSalt() {
+    }
+
     public static String getBase64Encoded() {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
+        var random = new SecureRandom();
+        var salt = new byte[16];
         random.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
     }

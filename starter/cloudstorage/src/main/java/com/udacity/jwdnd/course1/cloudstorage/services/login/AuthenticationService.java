@@ -1,6 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.services.login;
 
-import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import com.udacity.jwdnd.course1.cloudstorage.repositories.UserRepository;
 import com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.HashService;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,9 +23,9 @@ public class AuthenticationService implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String password = authentication.getCredentials().toString();
+        var password = authentication.getCredentials().toString();
 
-        User user = userRepository.getOne(username);
+        var user = userRepository.getOne(username);
         if (user != null) {
             String encodedSalt = user.getSalt();
             String hashedPassword = hashService.getHashedValue(password, encodedSalt);

@@ -8,6 +8,10 @@ public class User {
     private String firstName;
     private String lastName;
 
+    public User() {
+
+    }
+
     public User(Integer userId, String userName, String salt, String hashedPassword, String firstName, String lastName) {
         this.userId = userId;
         this.userName = userName;

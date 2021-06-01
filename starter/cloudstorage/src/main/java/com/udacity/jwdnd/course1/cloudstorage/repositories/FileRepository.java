@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class FileRepository {
     private final Logger logger = LoggerFactory.getLogger(FileRepository.class);
@@ -18,6 +20,10 @@ public class FileRepository {
 
     public File getOne(String fileName) {
         return mapper.getByFileName(fileName);
+    }
+
+    public List<File> getAll(int userId) {
+        return mapper.getAll(userId);
     }
 
     public boolean add(File file) {
@@ -43,5 +49,4 @@ public class FileRepository {
         boolean allDeleted = mapper.deleteAll();
         return allDeleted;
     }
-
 }

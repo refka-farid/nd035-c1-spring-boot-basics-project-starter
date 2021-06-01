@@ -15,15 +15,6 @@ public class File {
     public File() {
     }
 
-    public File(Integer fileId, String fileName, String contentType, String fileSize, byte[] fileData, Integer userId) {
-        this.fileId = fileId;
-        this.fileName = fileName;
-        this.contentType = contentType;
-        this.fileSize = fileSize;
-        this.fileData = fileData;
-        this.userId = userId;
-    }
-
     public Integer getFileId() {
         return fileId;
     }
@@ -88,6 +79,12 @@ public class File {
     }
 
     public static File from(String fileName, String contentType, String fileSize, byte[] fileData) {
-        return new File(null, fileName, contentType, fileSize, fileData, null);
+        File myFile = new File();
+        myFile.setFileName(fileName);
+        myFile.setContentType(contentType);
+        myFile.setFileSize(fileSize);
+        myFile.setFileData(fileData);
+
+        return myFile;
     }
 }

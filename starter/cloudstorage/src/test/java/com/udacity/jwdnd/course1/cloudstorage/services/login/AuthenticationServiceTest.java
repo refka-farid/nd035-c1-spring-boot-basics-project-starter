@@ -29,7 +29,7 @@ class AuthenticationServiceTest {
         when(authenticationMock.getName()).thenReturn("SALAH");
         when(authenticationMock.getCredentials()).thenReturn("azerty");
 
-        when(userRepositoryMock.getOne("SALAH")).thenReturn(
+        when(userRepositoryMock.getOneByUserName("SALAH")).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
 
@@ -43,7 +43,7 @@ class AuthenticationServiceTest {
         when(authenticationMock.getName()).thenReturn("SALAH");
         when(authenticationMock.getCredentials()).thenReturn("azertyaaaaaa");
 
-        when(userRepositoryMock.getOne("SALAH")).thenReturn(
+        when(userRepositoryMock.getOneByUserName("SALAH")).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
 

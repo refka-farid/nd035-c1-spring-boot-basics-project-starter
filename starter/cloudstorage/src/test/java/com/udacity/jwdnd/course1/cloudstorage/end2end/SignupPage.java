@@ -35,9 +35,7 @@ public class SignupPage {
         PageFactory.initElements(driver, this);
     }
 
-    public void registerUser(
-            SignupRequestDto user
-    ) {
+    public void registerUser(SignupRequestDto user) {
         inputFirstName.sendKeys(user.getFirstName());
         inputLastName.sendKeys(user.getLastName());
         inputUserName.sendKeys(user.getUserName());

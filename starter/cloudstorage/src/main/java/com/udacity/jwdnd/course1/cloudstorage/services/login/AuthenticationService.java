@@ -25,7 +25,7 @@ public class AuthenticationService implements AuthenticationProvider {
         String username = authentication.getName();
         var password = authentication.getCredentials().toString();
 
-        var user = userRepository.getOne(username);
+        var user = userRepository.getOneByUserName(username);
         if (user != null) {
             String encodedSalt = user.getSalt();
             String hashedPassword = hashService.getHashedValue(password, encodedSalt);

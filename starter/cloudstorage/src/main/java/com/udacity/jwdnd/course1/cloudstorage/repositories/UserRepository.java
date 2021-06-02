@@ -19,7 +19,7 @@ public class UserRepository {
         this.mapper = mapper;
     }
 
-    public User getOne(String userName) {
+    public User getOneByUserName(String userName) {
         logger.trace("getOne user " + userName);
         return mapper.getUserByUserName(userName);
     }

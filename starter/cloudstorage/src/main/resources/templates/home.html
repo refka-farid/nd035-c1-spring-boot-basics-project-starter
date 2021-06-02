@@ -26,7 +26,7 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
-                        <form action="#" enctype="multipart/form-data" method="POST">
+                        <form action="#" th:action="@{/home/file/upload}"  enctype="multipart/form-data" method="POST">
                             <div class="container">
                                 <div class="row" style="margin: 1em;">
                                     <div class="col-sm-2">
@@ -36,7 +36,10 @@
                                         <input type="file" class="form-control-file" id="fileUpload" name="fileUpload">
                                     </div>
                                     <div class="col-sm-4">
-                                        <button type="submit" class="btn btn-dark">Upload</button>
+                                        <button id="upload-btn" type="submit" class="btn btn-dark">Upload</button>
+                                    </div>
+                                    <div  th:if="${uploadFileResponseDto.fileNameExist}" id="error-msg" class="alert alert-danger">
+                                        The file name already exist.
                                     </div>
                                 </div>
                             </div>
@@ -49,13 +52,14 @@
                                         <th style="width: 80%" scope="col">File Name</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="file_tabel_body" th:each="file : ${fileResponseDtoList}" >
                                 <tr>
                                     <td>
-                                        <a target="_blank" class="btn btn-success">View</a>
-                                        <a  class="btn btn-danger">Delete</a>
+                                        <a id="view_btn" th:href="@{/home/file/view/{id}(id=${file.fileId})}" target="_blank" class="btn btn-success">View</a>
+                                        <a id="delete_btn" th:href="@{/home/file/delete/{id}(id=${file.fileId})}"  class="btn btn-danger">Delete</a>
                                     </td>
-                                    <th scope="row">ExampleFile.txt</th>
+
+                                    <th  id="file_name" th:text="${file.fileName}" scope="row">ExampleFile.txt</th>
                                 </tr>
                                 </tbody>
                             </table>

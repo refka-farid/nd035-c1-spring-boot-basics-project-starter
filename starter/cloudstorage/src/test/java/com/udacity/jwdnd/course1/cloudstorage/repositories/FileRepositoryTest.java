@@ -42,6 +42,7 @@ class FileRepositoryTest {
     @AfterEach
     void tearDown() {
         mapperFile.deleteAll();
+        mapperUser.deleteAll();
     }
 
     @Test
@@ -49,12 +50,14 @@ class FileRepositoryTest {
         var result = sut.add(myTestedFile);
         assertThat(result).isTrue();
 
-        var result2 = sut.getOne("myFile");
+        var result2 = sut.getByFileName("myFile");
         assertThat(result2).isEqualTo(myTestedFile);
     }
 
     @Test
-    void getAllByUserIdTest(){
+    void getAllByUserIdTest() {
+        var user = new User(null, "kamel", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "kamel", "kamel");
+        mapperUser.addUser(user);
         var storedUser = mapperUser.getUserByUserName("kamel");
 
         var file = new File();
@@ -68,7 +71,7 @@ class FileRepositoryTest {
         var files = new ArrayList<File>();
         files.add(file);
 
-        var result3 = sut.getAll(storedUser.getUserId());
+        var result3 = sut.getAllByUserId(storedUser.getUserId());
         assertThat(result3).isEqualTo(files);
     }
 
@@ -97,6 +100,26 @@ class FileRepositoryTest {
     void getAllTest() {
         sut.add(myTestedFile);
         var result = sut.deleteAll();
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void deleteByUserIdAndFileNameTest() {
+        var user = new User(null, "kamel", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "kamel", "kamel");
+        mapperUser.addUser(user);
+        var storedUser = mapperUser.getUserByUserName("kamel");
+
+        var file = new File();
+        file.setUserId(storedUser.getUserId());
+        file.setFileId(20);
+        file.setFileName("myFile2");
+        file.setContentType("text");
+        file.setFileData(myTestedFile.getFileData());
+
+        sut.add(file);
+        var files = new ArrayList<File>();
+        files.add(file);
+        var result = sut.deleteFileByFileNameAndUserId(storedUser.getUserId(), "myFile2");
         assertThat(result).isTrue();
     }
 }

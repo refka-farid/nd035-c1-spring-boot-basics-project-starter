@@ -1,11 +1,13 @@
 package com.udacity.jwdnd.course1.cloudstorage.end2end;
 
+import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.models.SignupRequestDto;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -19,13 +21,15 @@ class UserSupportE2ETest {
 
     @LocalServerPort
     private int port;
+    private static WebDriver driver;
 
     @Inject
-    private UserMapper mapper;
-    private static WebDriver driver;
+    private UserMapper userMapper;
+    @Inject
+    private FileMapper fileMapper;
+
     private SignupPage signupPage;
     private LoginPage loginPage;
-    private HomePage homePage;
 
     @BeforeAll
     static void beforeAll() {
@@ -37,7 +41,6 @@ class UserSupportE2ETest {
     public void beforeEach() {
         check_pageTitle();
         signupPage = new SignupPage(driver);
-        mapper.deleteAll();
     }
 
     @AfterAll
@@ -49,7 +52,8 @@ class UserSupportE2ETest {
 
     @AfterEach
     public void afterEach() {
-        mapper.deleteAll();
+        fileMapper.deleteAll();
+        userMapper.deleteAll();
     }
 
     @Test
@@ -74,7 +78,7 @@ class UserSupportE2ETest {
     }
 
     @Test
-    public void check_loginShouldShowError() {
+     void check_loginShouldShowError() {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
@@ -88,7 +92,7 @@ class UserSupportE2ETest {
     }
 
     @Test
-    public void check_loginShouldShowSuccess() {
+     void check_loginShouldShowSuccess() {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
@@ -104,33 +108,13 @@ class UserSupportE2ETest {
     }
 
     @Test
-    public void check_logoutShouldRedirectToLogin() {
-        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
-        signupPage.registerUser(user);
-        signupPage.submit();
-        signupPage.goToLogin();
-        driver.get("http://localhost:" + port + "/login");
-
-        loginPage = new LoginPage(driver);
-        loginPage.loginUser("Francis", "1234Hashed");
-        loginPage.submit();
-
-        homePage = new HomePage(driver);
-        homePage.logout();
-        String redirected_url = driver.getCurrentUrl();
-        driver.get(redirected_url);
-        assertThat(redirected_url).contains("/login");
-    }
-
-
-    @Test
-    public void check_pageTitle() {
+     void check_pageTitle() {
         driver.get("http://localhost:" + this.port + "/signup");
         Assertions.assertEquals("Sign Up", driver.getTitle());
     }
 
     @Test
-    public void getLoginPage() {
+     void getLoginPage() {
         driver.get("http://localhost:" + this.port + "/login");
         Assertions.assertEquals("Login", driver.getTitle());
     }

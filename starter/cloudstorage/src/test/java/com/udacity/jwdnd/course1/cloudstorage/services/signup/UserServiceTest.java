@@ -13,21 +13,21 @@ import static org.mockito.Mockito.verify;
 class UserServiceTest {
 
     private UserService sut;
-    private UserRepository userRepository;
+    private UserRepository userRepositoryMock;
     private HashService hashServiceMock;
 
     @BeforeEach
     void setUp() {
-        userRepository = mock(UserRepository.class);
+        userRepositoryMock = mock(UserRepository.class);
         hashServiceMock = mock(HashService.class);
-        sut = new UserService(userRepository, hashServiceMock);
+        sut = new UserService(userRepositoryMock, hashServiceMock);
     }
 
     @Test
     void isUsernameAvailableTest() {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.isUsernameAvailable(user1.getUserName());
-        verify(userRepository).getOne(user1.getUserName());
+        verify(userRepositoryMock).getOneByUserName(user1.getUserName());
     }
 
     @Test
@@ -35,13 +35,13 @@ class UserServiceTest {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.createUser(user1);
         verify(hashServiceMock).getHashedValue(anyString(), anyString());
-        verify(userRepository).add(user1);
+        verify(userRepositoryMock).add(user1);
     }
 
     @Test
     void getUserTest() {
         User user1 = User.from("aaaaa_userName", "aaaaa_password", "aaaaa_firstName", "aaaaa_lastName");
         sut.getUser(user1.getUserName());
-        verify(userRepository).getOne(user1.getUserName());
+        verify(userRepositoryMock).getOneByUserName(user1.getUserName());
     }
 }

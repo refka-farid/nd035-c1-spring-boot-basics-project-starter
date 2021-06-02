@@ -10,9 +10,10 @@
     </head>
     <body class="p-3 mb-2 bg-light text-black">
         <div class="container">
+            <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
             <div id="logoutDiv">
-                <form action="#" th:action="@{/home}" method="POST">
-                    <button type="submit" class="btn btn-secondary float-right">Logout</button>
+                <form action="#" th:action="@{/logout}" method="POST">
+                    <button id="logout-btn" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">

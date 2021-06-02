@@ -25,6 +25,7 @@ class UserSupportE2ETest {
     private static WebDriver driver;
     private SignupPage signupPage;
     private LoginPage loginPage;
+    private HomePage homePage;
 
     @BeforeAll
     static void beforeAll() {
@@ -36,6 +37,7 @@ class UserSupportE2ETest {
     public void beforeEach() {
         check_pageTitle();
         signupPage = new SignupPage(driver);
+        mapper.deleteAll();
     }
 
     @AfterAll
@@ -102,12 +104,32 @@ class UserSupportE2ETest {
     }
 
     @Test
+    public void check_logoutShouldRedirectToLogin() {
+        var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
+        signupPage.registerUser(user);
+        signupPage.submit();
+        signupPage.goToLogin();
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("Francis", "1234Hashed");
+        loginPage.submit();
+
+        homePage = new HomePage(driver);
+        homePage.logout();
+        String redirected_url = driver.getCurrentUrl();
+        driver.get(redirected_url);
+        assertThat(redirected_url).contains("/login");
+    }
+
+
+    @Test
     public void check_pageTitle() {
         driver.get("http://localhost:" + this.port + "/signup");
         Assertions.assertEquals("Sign Up", driver.getTitle());
     }
 
-	@Test
+    @Test
     public void getLoginPage() {
         driver.get("http://localhost:" + this.port + "/login");
         Assertions.assertEquals("Login", driver.getTitle());

@@ -87,7 +87,8 @@ class NoteRepositoryTest {
     void deleteNoteByNoteTitleAndUserIdTest() {
         var storedUser = mapperUser.getUserByUserName("lucie");
         mapperNote.add(myTestedNote);
-        var result = sut.deleteNoteByNoteTitleAndUserId(storedUser.getUserId(), "myFirstNote");
+        var note = mapperNote.getByNoteTitle(myTestedNote.getNoteTitle());
+        var result = sut.deleteNoteByNoteTitleAndUserId(storedUser.getUserId(), note.getNoteId());
         assertThat(result).isTrue();
     }
 
@@ -103,26 +104,5 @@ class NoteRepositoryTest {
         mapperNote.add(myTestedNote);
         var result = sut.getNoteByNoteTileAndUserId(user.getUserId(), myTestedNote.getNoteTitle());
         assertThat(result).isEqualTo(myTestedNote);
-    }
-
-    @Test
-    void updateOrNullTest() {
-        var myTestedNote2 = new Note(null, "myFirstNote", "MyNoteDescription2_modified", user.getUserId());
-        mapperNote.add(myTestedNote);
-        var result = sut.updateOrNull(myTestedNote2);
-        assertThat(result.getNoteDescription()).isEqualTo("MyNoteDescription2_modified");
-    }
-
-    @Test
-    void addOrUpdateTest() {
-        var myTestedNote2 = new Note(null, "myFirstNote", "myFirstNote MyNoteDescription2_modified", user.getUserId());
-        var myTestedNote3 = new Note(null, "mySecondNote", "mySecondNote MyNoteDescription", user.getUserId());
-        mapperNote.add(myTestedNote);
-        var result1 = sut.addOrUpdate(myTestedNote2);
-        var result2 = sut.addOrUpdate(myTestedNote3);
-        var list = sut.getAllByUserId(user.getUserId());
-        assertThat(result1.getNoteDescription()).isEqualTo("myFirstNote MyNoteDescription2_modified");
-        assertThat(result2.getNoteDescription()).isEqualTo("mySecondNote MyNoteDescription");
-        assertThat(list.size()).isEqualTo(2);
     }
 }

@@ -19,7 +19,7 @@ class NoteServiceTest {
     void setUp() {
         noteRepositoryMock = mock(NoteRepository.class);
         userServiceMock = mock(UserService.class);
-        sut = new NoteService(noteRepositoryMock, userServiceMock);
+        sut = new NoteService(userServiceMock, noteRepositoryMock);
     }
 
     @Test
@@ -33,13 +33,13 @@ class NoteServiceTest {
     }
 
     @Test
-    void deleteNoteByUserNameAndUserIdTest() {
+    void deleteNoteByNoteIdAndUserIdTest() {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
-        sut.deleteNoteByUserNameAndUserId("myNote");
+        sut.deleteNoteByNoteIdAndUserId(100);
         verify(userServiceMock).getAuthenticatedUser();
-        verify(noteRepositoryMock).deleteNoteByNoteTitleAndUserId(1, "myNote");
+        verify(noteRepositoryMock).deleteNoteByNoteTitleAndUserId(1, 100);
     }
 
     @Test
@@ -79,7 +79,7 @@ class NoteServiceTest {
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
         var note = new Note(100, "mySecondNote", "mySecondNote MyNoteDescription", 1);
-        sut.addNoteFile(note);
+        sut.addNote(note);
         verify(userServiceMock, times(2)).getAuthenticatedUser();
         verify(noteRepositoryMock).add(argThat(argument ->
                 argument instanceof Note

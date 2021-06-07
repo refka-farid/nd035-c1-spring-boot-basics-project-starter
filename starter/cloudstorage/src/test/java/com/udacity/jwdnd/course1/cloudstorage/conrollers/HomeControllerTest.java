@@ -1,9 +1,12 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
 import com.udacity.jwdnd.course1.cloudstorage.models.FileResponseDto;
+import com.udacity.jwdnd.course1.cloudstorage.models.NoteResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.models.UploadFileResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.file.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.services.note.NoteService;
 import com.udacity.jwdnd.course1.cloudstorage.util.FileFactory;
+import com.udacity.jwdnd.course1.cloudstorage.util.NoteFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +22,10 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -35,23 +39,30 @@ class HomeControllerTest {
     @MockBean
     private FileService fileServiceMock;
 
-    @WithMockUser(username = "john")
+    @MockBean
+    private NoteService noteServiceMock;
+
+    @WithMockUser(username = "ali")
     @Test
     void getTest() throws Exception {
         given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
         var list = FileFactory.createFileList();
         var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
+
+        given(noteServiceMock.getAllAuthenticatedUserNote()).willReturn(NoteFactory.createNoteList());
+        var list2 = NoteFactory.createNoteList();
+        var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
+
         mockMvc.perform(get("/home"))
+                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
                 .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
                 .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
                 .andExpect(view().name("home"))
-                .andExpect(content().string(containsString("<table class=\"table table-striped\" id=\"fileTable\">\n" +
-                        "                                <thead>\n" +
-                        "                                    <tr>\n" +
-                        "                                        <th style=\"width: 20%\" scope=\"col\"></th>\n" +
-                        "                                        <th style=\"width: 80%\" scope=\"col\">File Name</th>\n" +
-                        "                                    </tr>\n" +
-                        "                                </thead>")))
+                .andExpect(content().string(containsString("<div class=\"col-sm-2\">\n" +
+                        "                                <label for=\"fileUpload\">Upload a New File:</label>\n" +
+                        "                            </div>")))
+                .andExpect(content().string(containsString("<div class=\"form-group\">\n" +
+                        "                                        <label for=\"note-description\" class=\"col-form-label\">Description</label>")))
                 .andExpect(status().isOk());
     }
 
@@ -60,7 +71,6 @@ class HomeControllerTest {
     void getBaseUrlHomeAuthenticatedTest() throws Exception {
         given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
         var list = FileFactory.createFileList();
-        var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"))
@@ -95,7 +105,7 @@ class HomeControllerTest {
 
         mockMvc.perform(get("/home/file/delete/100")
                 .contentType(MediaType.parseMediaType("text/plain"))
-                .param("id", "my_File_UzerZ_1.txt"))
+                .param("id", "my_File_UzerZ_1.txt"))//todo
                 .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
                 .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
                 .andExpect(status().isOk());
@@ -109,5 +119,79 @@ class HomeControllerTest {
         given(fileServiceMock.addFile(mockFile)).willReturn(true);
         mockMvc.perform(multipart("/home/file/upload").file(mockFile))
                 .andExpect(status().isOk());
+    }
+
+
+    @WithMockUser(username = "z")
+    @Test
+    void addNoteTest() throws Exception {
+        given(noteServiceMock.getNoteByNoteId(100)).willReturn(NoteFactory.createNoteWithoutNoteId());
+
+        given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
+        var list = FileFactory.createFileList();
+        var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
+
+        given(noteServiceMock.getAllAuthenticatedUserNote()).willReturn(NoteFactory.createNoteList());
+        var list2 = NoteFactory.createNoteList();
+        var note = NoteFactory.createNoteWithoutNoteId();
+        var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
+
+        mockMvc.perform(post("/home/note/addOrEdit")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("noteId", (String) null)
+                .param("noteTitle", note.getNoteTitle())
+                .param("noteDescription", note.getNoteDescription())
+        )
+                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
+                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
+                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
+                .andExpect(status().isOk());
+        verify(noteServiceMock).addNote(argThat(argument ->
+                argument.getNoteTitle().equals(note.getNoteTitle()) &&
+                        argument.getNoteDescription().equals(note.getNoteDescription())
+        ));
+        verify(noteServiceMock).getAllAuthenticatedUserNote();
+
+    }
+
+    @WithMockUser(username = "z")
+    @Test
+    void editNoteTest() throws Exception {
+        given(noteServiceMock.getNoteByNoteId(100)).willReturn(NoteFactory.createNoteWithNoteId());
+
+        given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
+        var list = FileFactory.createFileList();
+        var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
+
+        given(noteServiceMock.getAllAuthenticatedUserNote()).willReturn(NoteFactory.createNoteList());
+        var list2 = NoteFactory.createNoteList();
+        var note = NoteFactory.createNoteWithNoteId();
+        var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
+
+
+        mockMvc.perform(post("/home/note/addOrEdit")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("noteId", "100")
+                .param("noteTitle", note.getNoteTitle())
+                .param("noteDescription", note.getNoteDescription())
+        )
+                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
+                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
+                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
+                .andExpect(status().isOk());
+        verify(noteServiceMock).update(argThat(argument -> argument.getNoteId().equals(note.getNoteId())));
+    }
+
+    @WithMockUser(username = "z")
+    @Test
+    void deleteNoteTest() throws Exception {
+        given(noteServiceMock.getNoteByNoteId(100)).willReturn(NoteFactory.createNoteWithNoteId());
+        given(noteServiceMock.deleteNoteByNoteIdAndUserId(100)).willReturn(true);
+
+        mockMvc.perform(get("/home/note/delete/100")
+                .param("id", "100"))
+                .andExpect(status().isOk());
+        verify(noteServiceMock).getNoteByNoteId(100);
+        verify(noteServiceMock).deleteNoteByNoteIdAndUserId(100);
     }
 }

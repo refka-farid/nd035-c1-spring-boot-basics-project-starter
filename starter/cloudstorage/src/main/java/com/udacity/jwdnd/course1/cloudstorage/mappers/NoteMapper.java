@@ -30,15 +30,14 @@ public interface NoteMapper {
     @Delete("DELETE FROM NOTES")
     boolean deleteAll();
 
-    @Delete("DELETE FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle}")
-    boolean deleteNoteByNoteTitleAndUserId(int userId, String noteTitle);
+    @Delete("DELETE FROM NOTES WHERE userid = #{userId} AND noteid = #{noteId}")
+    boolean deleteNoteByNoteIdAndUserId(int userId, int noteId);
 
     @Insert("INSERT INTO NOTES ( noteid ,notetitle, notedescription , userid ) "
             + " VALUES ( #{noteId},#{noteTitle}, #{noteDescription}, #{userId} ) ")
     @Options(useGeneratedKeys = true, keyColumn = "noteid", keyProperty = "noteId")
     int add(Note note);
 
-    @Update("UPDATE NOTES SET noteid =#{noteId}, notetitle =#{noteTitle}, notedescription =#{noteDescription}, userid =#{userId}")
+    @Update("UPDATE NOTES SET notetitle =#{noteTitle}, notedescription =#{noteDescription}, userid =#{userId} WHERE noteid =#{noteId}")
     boolean updateNote(Note note);
-
 }

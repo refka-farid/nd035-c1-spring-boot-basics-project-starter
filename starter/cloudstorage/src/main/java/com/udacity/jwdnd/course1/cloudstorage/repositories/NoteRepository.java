@@ -35,8 +35,7 @@ public class NoteRepository {
 
     public boolean delete1(Note note) {
         logger.trace("delete1 " + note);
-        boolean isDeleted = mapper.deleteByNoteTitle2(note.getNoteTitle());
-        return isDeleted;
+        return mapper.deleteByNoteTitle2(note.getNoteTitle());
     }
 
     public boolean delete2(Note note) {
@@ -47,14 +46,12 @@ public class NoteRepository {
 
     public boolean deleteAll() {
         logger.trace("deleteAll");
-        boolean allDeleted = mapper.deleteAll();
-        return allDeleted;
+        return mapper.deleteAll();
     }
 
-    public boolean deleteNoteByNoteTitleAndUserId(int userId, String noteTitle) {
-        logger.trace("deletenoteByNoteTitleAndUserId " + userId + noteTitle);
-        boolean IsNoteDeleted = mapper.deleteNoteByNoteTitleAndUserId(userId, noteTitle);
-        return IsNoteDeleted;
+    public boolean deleteNoteByNoteTitleAndUserId(int userId, int noteId) {
+        logger.trace("deletenoteByNoteTitleAndUserId " + userId + noteId);
+        return mapper.deleteNoteByNoteIdAndUserId(userId, noteId);
     }
 
     public Note getByNoteId(int noteId) {
@@ -78,13 +75,12 @@ public class NoteRepository {
 
     public Note addOrUpdate(Note note) {
         logger.trace("addOrUpdate " + note);
-        Note storedNote = mapper.getByNoteTitle(note.getNoteTitle());
+        Note storedNote = mapper.getByNoteId(note.getNoteId());
         if (storedNote == null) {
             mapper.add(note);
         } else {
             mapper.updateNote(note);
         }
-        return mapper.getByNoteTitle(note.getNoteTitle());
+        return mapper.getByNoteId(note.getNoteId());
     }
-
 }

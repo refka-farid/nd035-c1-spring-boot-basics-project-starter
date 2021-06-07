@@ -1,20 +1,17 @@
-package com.udacity.jwdnd.course1.cloudstorage.entities;
+package com.udacity.jwdnd.course1.cloudstorage.models;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.NoteResponseDto;
+import com.udacity.jwdnd.course1.cloudstorage.entities.Note;
 
 import java.util.Objects;
 
-public class Note {
+public class NoteResponseDto {
 
-    Integer noteId;
-    String noteTitle;
-    String noteDescription;
-    Integer userId;
+    private Integer noteId;
+    private String noteTitle;
+    private String noteDescription;
+    private Integer userId;
 
-    public Note() {
-    }
-
-    public Note(Integer noteId, String noteTitle, String noteDescription, Integer userId) {
+    public NoteResponseDto(Integer noteId, String noteTitle, String noteDescription, Integer userId) {
         this.noteId = noteId;
         this.noteTitle = noteTitle;
         this.noteDescription = noteDescription;
@@ -53,17 +50,20 @@ public class Note {
         this.userId = userId;
     }
 
+    public static NoteResponseDto fromNote(Note note) {
+        return new NoteResponseDto(note.getNoteId(), note.getNoteTitle(), note.getNoteDescription(), note.getUserId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return  noteTitle.equals(note.noteTitle) && noteDescription.equals(note.noteDescription) && userId.equals(note.userId);
+        NoteResponseDto that = (NoteResponseDto) o;
+        return noteTitle.equals(that.noteTitle) && noteDescription.equals(that.noteDescription) && userId.equals(that.userId);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(noteId, noteTitle, noteDescription, userId);
     }
-
 }

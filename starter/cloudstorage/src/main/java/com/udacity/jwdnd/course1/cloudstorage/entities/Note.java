@@ -1,7 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.entities;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.NoteResponseDto;
-
 import java.util.Objects;
 
 public class Note {
@@ -58,7 +56,7 @@ public class Note {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Note note = (Note) o;
-        return  noteTitle.equals(note.noteTitle) && noteDescription.equals(note.noteDescription) && userId.equals(note.userId);
+        return noteTitle.equals(note.noteTitle) && noteDescription.equals(note.noteDescription) && userId.equals(note.userId);
     }
 
     @Override

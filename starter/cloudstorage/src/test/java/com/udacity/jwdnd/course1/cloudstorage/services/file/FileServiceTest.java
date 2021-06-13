@@ -62,12 +62,6 @@ class FileServiceTest {
     }
 
     @Test
-    void getFileByFileIdTest() {
-        sut.getFileByFileId(92);
-        verify(fileRepositoryMock).getByFileId(92);
-    }
-
-    @Test
     void isFileNameExistTest1() {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
@@ -100,5 +94,4 @@ class FileServiceTest {
         verify(fileRepositoryMock).getByFileId(95);
         verify(fileRepositoryMock).getFileByFileNameAndUserId(142, "my_File_UzerZ_1.txt");
     }
-
 }

@@ -7,7 +7,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.safari.SafariDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -78,7 +77,7 @@ class UserSupportE2ETest {
     }
 
     @Test
-     void check_loginShouldShowError() {
+    void check_loginShouldShowError() {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
@@ -92,7 +91,7 @@ class UserSupportE2ETest {
     }
 
     @Test
-     void check_loginShouldShowSuccess() {
+    void check_loginShouldShowSuccess() {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
@@ -108,13 +107,13 @@ class UserSupportE2ETest {
     }
 
     @Test
-     void check_pageTitle() {
+    void check_pageTitle() {
         driver.get("http://localhost:" + this.port + "/signup");
         Assertions.assertEquals("Sign Up", driver.getTitle());
     }
 
     @Test
-     void getLoginPage() {
+    void getLoginPage() {
         driver.get("http://localhost:" + this.port + "/login");
         Assertions.assertEquals("Login", driver.getTitle());
     }

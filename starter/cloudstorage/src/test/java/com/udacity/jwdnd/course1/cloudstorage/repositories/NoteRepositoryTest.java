@@ -63,20 +63,6 @@ class NoteRepositoryTest {
     }
 
     @Test
-    void delete1Test() {
-        mapperNote.add(myTestedNote);
-        var result = sut.delete1(myTestedNote);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void delete2Test() {
-        mapperNote.add(myTestedNote);
-        var result = sut.delete2(myTestedNote);
-        assertThat(result).isTrue();
-    }
-
-    @Test
     void deleteAllTest() {
         mapperNote.add(myTestedNote);
         var result = sut.deleteAll();

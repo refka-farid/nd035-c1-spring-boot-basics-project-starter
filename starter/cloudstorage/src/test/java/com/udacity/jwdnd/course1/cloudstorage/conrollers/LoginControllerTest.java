@@ -1,7 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
-import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class LoginControllerTest {
 
     @Test
     void check_loginUser_POST_when_success() throws Exception {
-        mapper.addUser(new User(null,"leticia","HIxi7PbCRU9uIyET6sdGEg==","8H7jlDi3a2iPiu9ZI1+krA==","leticia","leticia"));
+        mapper.addUser(new User(null, "leticia", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "leticia", "leticia"));
 
         mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

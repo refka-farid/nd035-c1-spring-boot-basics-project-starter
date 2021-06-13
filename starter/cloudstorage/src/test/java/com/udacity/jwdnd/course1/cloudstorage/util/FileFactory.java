@@ -26,8 +26,6 @@ public class FileFactory {
 
         var list = new ArrayList<File>();
         list.add(file);
-//        list.add(file);
-//        list.add(file);
         return list;
     }
 

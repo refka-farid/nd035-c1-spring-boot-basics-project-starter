@@ -43,12 +43,12 @@ public class NoteRequestDto {
         this.noteId = noteId;
     }
 
-    public  Note toNote(Integer userId) {
-        return new Note(noteId,noteTitle, noteDescription, userId);
+    public Note toNote(Integer userId) {
+        return new Note(noteId, noteTitle, noteDescription, userId);
     }
 
     public Note toNote() {
-        return new Note(noteId,noteTitle, noteDescription, null);
+        return new Note(noteId, noteTitle, noteDescription, null);
     }
 
     public static NoteRequestDto fromNote(Note note) {

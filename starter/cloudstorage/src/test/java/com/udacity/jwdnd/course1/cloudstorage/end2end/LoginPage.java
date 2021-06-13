@@ -36,6 +36,7 @@ public class LoginPage {
         inputUsername.sendKeys(Username);
         inputPassword.sendKeys(Password);
     }
+
     public String getErrorMsg() {
         return errorMsg.getText() + "";
     }

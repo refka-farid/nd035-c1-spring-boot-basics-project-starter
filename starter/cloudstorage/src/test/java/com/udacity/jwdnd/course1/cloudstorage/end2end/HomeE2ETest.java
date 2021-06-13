@@ -1,7 +1,9 @@
 package com.udacity.jwdnd.course1.cloudstorage.end2end;
 
+import com.udacity.jwdnd.course1.cloudstorage.entities.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.entities.Note;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
@@ -11,12 +13,12 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static com.udacity.jwdnd.course1.cloudstorage.util.FileResourceHelper.isFileDownloaded;
@@ -31,11 +33,15 @@ class HomeE2ETest {
 
     @Inject
     private UserMapper userMapper;
+
     @Inject
     private FileMapper fileMapper;
 
     @Inject
     private NoteMapper noteMapper;
+
+    @Inject
+    private CredentialMapper credentialMapper;
 
     private SignupPage signupPage;
     private LoginPage loginPage;
@@ -61,6 +67,7 @@ class HomeE2ETest {
 
     @AfterEach
     public void afterEach() {
+        credentialMapper.deleteAll();
         noteMapper.deleteAll();
         fileMapper.deleteAll();
         userMapper.deleteAll();
@@ -108,6 +115,7 @@ class HomeE2ETest {
         String redirected_url = driver.getCurrentUrl();
         driver.get(redirected_url);
 
+        WebDriverHelper.wait_s(driver, 1_000);
         assertThat(isFileDownloaded("/Users/houssemzaier/Downloads", "oiseauTest")).isTrue();
         assertThat(redirected_url).contains("/home");
 
@@ -132,7 +140,7 @@ class HomeE2ETest {
     }
 
     @Test
-    void check_createNoteShouldAppear() {
+    void check_noteFeature() {
         var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
         userMapper.addUser(user2);
         driver.get("http://localhost:" + port + "/login");
@@ -209,6 +217,104 @@ class HomeE2ETest {
         List<Note> listDelete = noteMapper.getAll(user2.getUserId());
         assertThat(listDelete).isEmpty();
 
-//        😂
     }
+
+    @Test
+    void check_credentialFeature() {
+        var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
+        userMapper.addUser(user2);
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("lucie", "azerty");
+        loginPage.submit();
+        driver.get("http://localhost:" + port + "/home");
+
+        /*Add new credential Test block*/
+        WebDriverWait wait = new WebDriverWait(driver, 1000);
+        WebElement marker = wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab")));
+        marker.sendKeys("Credentials");
+        marker.click();
+
+        WebElement addNewCredential = driver.findElement(By.id("add_new_credential"));
+        JavascriptExecutor jse1 = (JavascriptExecutor) driver;
+        jse1.executeScript("arguments[0].click();", addNewCredential);
+
+        WebElement credentialUrl = driver.findElement(By.id("credential-url"));
+        String inputText = "https://intellij-support.jetbrains.com/hc/en-us";
+        credentialUrl.getAttribute("url");
+        JavascriptExecutor jse2 = (JavascriptExecutor) driver;
+        jse2.executeScript("arguments[1].value = arguments[0]; ", inputText, credentialUrl);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialUsername = driver.findElement(By.id("credential-username"));
+        String inputText2 = "Admin";
+        credentialUsername.getAttribute("username");
+        JavascriptExecutor jse3 = (JavascriptExecutor) driver;
+        jse3.executeScript("arguments[1].value = arguments[0]; ", inputText2, credentialUsername);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialPassword = driver.findElement(By.id("credential-password"));
+        String inputText3 = "1234";
+        credentialUsername.getAttribute("password");
+        JavascriptExecutor jse4 = (JavascriptExecutor) driver;
+        jse4.executeScript("arguments[1].value = arguments[0]; ", inputText3, credentialPassword);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialSubmit = driver.findElement(By.id("credentialSubmit"));
+        JavascriptExecutor jse5 = (JavascriptExecutor) driver;
+        jse5.executeScript("arguments[0].click();", credentialSubmit);
+
+        WebElement navToCredentials = driver.findElement(By.id("nav-credentials-tab"));
+        JavascriptExecutor jse6 = (JavascriptExecutor) driver;
+        jse6.executeScript("arguments[0].click();", navToCredentials);
+
+        List<Credential> list = credentialMapper.getAll(user2.getUserId());
+        assertThat(list.get(0).getUrl()).isEqualTo("https://intellij-support.jetbrains.com/hc/en-us");
+        assertThat(list.get(0).getUserName()).isEqualTo("Admin");
+
+        /*Edit Credential Test Block*/
+        WebDriverWait waitEdit = new WebDriverWait(driver, 1000);
+        WebElement markerEdit = waitEdit.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab")));
+        markerEdit.sendKeys("Credentials");
+        markerEdit.click();
+
+        WebElement editCredentialBtn = driver.findElement(By.id("edit_credential_btn"));
+        JavascriptExecutor jse7 = (JavascriptExecutor) driver;
+        jse7.executeScript("arguments[0].click();", editCredentialBtn);
+
+        var staleElement = true;
+        while (staleElement) {
+            try {
+                WebDriverWait t = new WebDriverWait(driver, 1000);
+                WebElement credentialUsernameEdited = driver.findElement(By.xpath("//input[@id=\"credential-username\"]"));
+                t.until(ExpectedConditions.visibilityOf(credentialUsernameEdited));
+                t.until(ExpectedConditions.elementToBeClickable(credentialUsernameEdited));
+                String inputTextEdited = "SimpleUser";
+                credentialUsernameEdited.getAttribute("username");
+                credentialUsernameEdited.clear();
+                JavascriptExecutor jse8 = (JavascriptExecutor) driver;
+                jse8.executeScript("arguments[1].value = arguments[0]; ", inputTextEdited, credentialUsernameEdited);
+                driver.switchTo().defaultContent();
+                staleElement = false;
+            } catch (StaleElementReferenceException e) {
+                staleElement = true;
+            }
+        }
+
+        WebElement credentialSubmit2 = driver.findElement(By.id("credentialSubmit"));
+        JavascriptExecutor jse9 = (JavascriptExecutor) driver;
+        jse9.executeScript("arguments[0].click();", credentialSubmit2);
+
+        List<Credential> listEdited = credentialMapper.getAll(user2.getUserId());
+        assertThat(listEdited.get(0).getUserName()).isEqualTo("SimpleUser");
+
+        /*Delete Credential Test Block*/
+        WebElement deleteCredentialBtn = driver.findElement(By.id("delete_credential"));
+        JavascriptExecutor jse10Delete = (JavascriptExecutor) driver;
+        jse10Delete.executeScript("arguments[0].click();", deleteCredentialBtn);
+        List<Note> listDelete = noteMapper.getAll(user2.getUserId());
+        assertThat(listDelete).isEmpty();
+    }
+
 }

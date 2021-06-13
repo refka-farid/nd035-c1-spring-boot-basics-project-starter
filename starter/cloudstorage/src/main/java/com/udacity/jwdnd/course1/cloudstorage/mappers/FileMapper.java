@@ -25,12 +25,6 @@ public interface FileMapper {
     @Options(useGeneratedKeys = true, keyColumn = "fileid", keyProperty = "fileId")
     int add(File file);
 
-    @Delete("DELETE FROM FILES WHERE filename = #{fileName}")
-    int deleteByFileName(String fileName);
-
-    @Delete("DELETE FROM FILES WHERE filename = #{fileName}")
-    boolean deleteByFileName2(String fileName);
-
     @Delete("DELETE FROM FILES")
     boolean deleteAll();
 

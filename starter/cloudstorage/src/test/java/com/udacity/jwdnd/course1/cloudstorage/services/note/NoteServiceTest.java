@@ -80,7 +80,7 @@ class NoteServiceTest {
         );
         var note = new Note(100, "mySecondNote", "mySecondNote MyNoteDescription", 1);
         sut.addNote(note);
-        verify(userServiceMock, times(2)).getAuthenticatedUser();
+        verify(userServiceMock).getAuthenticatedUser();
         verify(noteRepositoryMock).add(argThat(argument ->
                 argument instanceof Note
         ));

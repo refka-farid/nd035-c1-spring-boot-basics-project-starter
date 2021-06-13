@@ -76,20 +76,6 @@ class FileRepositoryTest {
     }
 
     @Test
-    void delete1Test() {
-        sut.add(myTestedFile);
-        var result = sut.delete1(myTestedFile);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void delete2Test() {
-        sut.add(myTestedFile);
-        var result = sut.delete2(myTestedFile);
-        assertThat(result).isTrue();
-    }
-
-    @Test
     void deleteAllTest() {
         sut.add(myTestedFile);
         var result = sut.deleteAll();

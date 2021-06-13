@@ -7,6 +7,8 @@ import com.udacity.jwdnd.course1.cloudstorage.services.signup.UserService;
 import com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.EncryptionService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.RandomKey.getBase64EncodedKey;
 
 @Service
@@ -21,46 +23,48 @@ public class CredentialService {
         this.encryptionService = encryptionService;
     }
 
-    public String getUnencryptedCredentialPassword(Credential credential) {
-        var storedCredential = credentialRepository.getByCredentialId(credential.getCredentialId());
-        var encodedKey = storedCredential.getKey();
-        var encryptPassword= encryptionService.encryptValue(credential.getPassword(),encodedKey);
-        return encryptionService.decryptValue(encryptPassword, encodedKey);
+    public String getUnencryptedCredentialPassword(String data, String key) {
+        return encryptionService.decryptValue(data, key);
     }
 
-    public User getAuthenticatedUser() {
+    public String getEncryptedCredentialPassword(String data, String key) {
+        return encryptionService.encryptValue(data, key);
+    }
+
+    private User getAuthenticatedUser() {
         return userService.getAuthenticatedUser();
     }
 
-    public Credential getByCredentialIdAndUserId(Credential credential) {
-        return credentialRepository.getByCredentialId(credential.getCredentialId());
+    public void add(Credential credential) {
+        var key = getBase64EncodedKey();
+        var encryptedPassword = getEncryptedCredentialPassword(credential.getPassword(), key);
+        var userId = getAuthenticatedUser().getUserId();
+        var newCredential1 = new Credential(null, credential.getUrl(), credential.getUserName(), key, encryptedPassword, userId);
+        credentialRepository.add(newCredential1);
     }
 
-    public void addOrUpdate(Credential credential) {
-        var storedCredential = credentialRepository.getByCredentialId(credential.getCredentialId());
-        if (storedCredential == null) {
-            var key = getBase64EncodedKey();
-            var encryptedPassword = encryptionService.encryptValue(credential.getPassword(), key);
-            var userId = getAuthenticatedUser().getUserId();
-            var newCredential1 = new Credential(null, credential.getUrl(), credential.getUserName(), key, encryptedPassword, userId);
-            credentialRepository.add(newCredential1);
-        } else {
-            update(credential);
-        }
-    }
-
-    private void update(Credential credential) {
+    public void update(Credential credential) {
         var credentialToUpdate = credentialRepository.getByCredentialId(credential.getCredentialId());
         credentialToUpdate.setUrl(credential.getUrl());
         credentialToUpdate.setUserName(credential.getUserName());
         credentialToUpdate.setUserId(userService.getAuthenticatedUser().getUserId());
-        credentialToUpdate.setKey(credential.getKey());
-        credentialToUpdate.setPassword(encryptionService.encryptValue(credential.getPassword(), credential.getKey()));
+        if (!credential.getPassword().equals(getUnencryptedCredentialPassword(credentialToUpdate.getPassword(), credentialToUpdate.getKey()))) {
+            credentialToUpdate.setPassword(getEncryptedCredentialPassword(credential.getPassword(), credentialToUpdate.getKey()));
+        }
         credentialRepository.updateCredential(credentialToUpdate);
     }
 
     public boolean deleteByCredentialIdAndUserId(int credentialId) {
         var user = userService.getAuthenticatedUser();
         return credentialRepository.deleteByCredentialIdAndUserId(user.getUserId(), credentialId);
+    }
+
+    public List<Credential> getAllAuthenticatedUserCredential() {
+        var user = getAuthenticatedUser();
+        return credentialRepository.getAll(user.getUserId());
+    }
+
+    public Credential getByCredentialId(Integer id) {
+        return credentialRepository.getByCredentialId(id);
     }
 }

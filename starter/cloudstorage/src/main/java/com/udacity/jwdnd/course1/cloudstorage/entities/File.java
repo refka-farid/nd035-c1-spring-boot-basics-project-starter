@@ -68,7 +68,7 @@ public class File {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         File file = (File) o;
-        return  Objects.equals(fileName, file.fileName) && Objects.equals(contentType, file.contentType) && Objects.equals(fileSize, file.fileSize) && Arrays.equals(fileData, file.fileData) ;
+        return Objects.equals(fileName, file.fileName) && Objects.equals(contentType, file.contentType) && Objects.equals(fileSize, file.fileSize) && Arrays.equals(fileData, file.fileData);
     }
 
     @Override

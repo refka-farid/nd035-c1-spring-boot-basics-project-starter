@@ -32,32 +32,18 @@ public class FileRepository {
         return id > 0;
     }
 
-    public boolean delete1(File file) {
-        logger.trace("delete1 " + file);
-        boolean isDeleted = mapper.deleteByFileName2(file.getFileName());
-        return isDeleted;
-    }
-
-    public boolean delete2(File file) {
-        logger.trace("delete2" + file);
-        int rows = mapper.deleteByFileName(file.getFileName());
-        return rows > 0;
-    }
-
     public boolean deleteAll() {
         logger.trace("deleteAll");
-        boolean allDeleted = mapper.deleteAll();
-        return allDeleted;
+        return mapper.deleteAll();
     }
 
     public boolean deleteFileByFileNameAndUserId(int userId, String fileName) {
         logger.trace("deleteFileByFileNameAndUserId " + userId + fileName);
-        boolean IsFileDeleted = mapper.deleteFileByFileNameAndUserId(userId, fileName);
-        return IsFileDeleted;
+        return mapper.deleteFileByFileNameAndUserId(userId, fileName);
     }
 
     public File getByFileId(int fileId) {
-       return mapper.getByFileId(fileId);
+        return mapper.getByFileId(fileId);
     }
 
     public File getFileByFileNameAndUserId(Integer userId, String fileName) {

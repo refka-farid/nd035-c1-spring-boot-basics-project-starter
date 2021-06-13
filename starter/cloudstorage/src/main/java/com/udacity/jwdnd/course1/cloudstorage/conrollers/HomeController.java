@@ -1,10 +1,8 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
 import com.udacity.jwdnd.course1.cloudstorage.entities.File;
-import com.udacity.jwdnd.course1.cloudstorage.models.FileResponseDto;
-import com.udacity.jwdnd.course1.cloudstorage.models.NoteRequestDto;
-import com.udacity.jwdnd.course1.cloudstorage.models.NoteResponseDto;
-import com.udacity.jwdnd.course1.cloudstorage.models.UploadFileResponseDto;
+import com.udacity.jwdnd.course1.cloudstorage.models.*;
+import com.udacity.jwdnd.course1.cloudstorage.services.credential.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.file.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.file.FileTypeLoader;
 import com.udacity.jwdnd.course1.cloudstorage.services.note.NoteService;
@@ -30,11 +28,13 @@ public class HomeController {
     private final FileTypeLoader fileTypeLoader;
     private final FileService fileService;
     private final NoteService noteService;
+    private final CredentialService credentialService;
 
-    public HomeController(FileTypeLoader fileTypeLoader, FileService fileService, NoteService noteService) {
+    public HomeController(FileTypeLoader fileTypeLoader, FileService fileService, NoteService noteService, CredentialService credentialService) {
         this.fileTypeLoader = fileTypeLoader;
         this.fileService = fileService;
         this.noteService = noteService;
+        this.credentialService = credentialService;
     }
 
     @GetMapping()
@@ -46,14 +46,13 @@ public class HomeController {
     private void addAllAttributesModel(Model model) {
         final List<FileResponseDto> fileResponseDtoList = fromFileListToFileResponseDtoList();
         var uploadFileResponseDto = new UploadFileResponseDto(false);
-        var storedNotesList = noteService.getAllAuthenticatedUserNote();
-        var noteResponseDtoList = storedNotesList.stream()
-                .map(NoteResponseDto::fromNote)
-                .collect(Collectors.toList());
+        List<NoteResponseDto> noteResponseDtoList = fromNoteListToNoteResponseDtoList();
+        final List<CredentialResponseDto> credentialResponseDtoList = fromCredentialListToCredentialResponseDto();
 
         model.addAttribute("uploadFileResponseDto", uploadFileResponseDto);
         model.addAttribute("fileResponseDtoList", fileResponseDtoList);
         model.addAttribute("noteResponseDtoList", noteResponseDtoList);
+        model.addAttribute("credentialResponseDtoList", credentialResponseDtoList);
     }
 
     private List<FileResponseDto> fromFileListToFileResponseDtoList() {
@@ -62,6 +61,26 @@ public class HomeController {
                 .stream()
                 .map(FileResponseDto::fromFile)
                 .collect(Collectors.toList());
+    }
+
+    private List<NoteResponseDto> fromNoteListToNoteResponseDtoList() {
+        var storedNotesList = noteService.getAllAuthenticatedUserNote();
+        return storedNotesList.stream()
+                .map(NoteResponseDto::fromNote)
+                .collect(Collectors.toList());
+    }
+
+    private List<CredentialResponseDto> fromCredentialListToCredentialResponseDto() {
+        var storedCredentialList = credentialService.getAllAuthenticatedUserCredential();
+        List<CredentialResponseDto> credentialResponseDtoList;
+        credentialResponseDtoList = storedCredentialList.stream()
+                .map(credential -> {
+                    String encryptedCredentialPassword = credential.getPassword();
+                    String unencryptedCredentialPassword = credentialService.getUnencryptedCredentialPassword(credential.getPassword(), credential.getKey());
+                    return CredentialResponseDto.fromCredential(credential, encryptedCredentialPassword, unencryptedCredentialPassword);
+                })
+                .collect(Collectors.toList());
+        return credentialResponseDtoList;
     }
 
     @GetMapping("/file/view/{id}")
@@ -78,13 +97,7 @@ public class HomeController {
     public String getHomeFileDelete(Model model, @PathVariable("id") Integer id) {
         var file = fileService.getFileByFileNameAndUserId(id);
         fileService.deleteFileByUserNameAndUserId(file.getFileName());
-
-        final List<FileResponseDto> fileResponseDtoList = fromFileListToFileResponseDtoList();
-        var uploadFileResponseDto = new UploadFileResponseDto(false);
-
-        model.addAttribute("uploadFileResponseDto", uploadFileResponseDto);
-        model.addAttribute("fileResponseDtoList", fileResponseDtoList);
-        logger.trace(" file deleted with id : " + id);
+        addAllAttributesModel(model);
         return "home";
     }
 
@@ -96,6 +109,11 @@ public class HomeController {
         fileService.addFile(file);
 
         final List<FileResponseDto> fileResponseDtoList = fromFileListToFileResponseDtoList();
+        List<NoteResponseDto> noteResponseDtoList = fromNoteListToNoteResponseDtoList();
+        final List<CredentialResponseDto> credentialResponseDtoList = fromCredentialListToCredentialResponseDto();
+
+        model.addAttribute("noteResponseDtoList", noteResponseDtoList);
+        model.addAttribute("credentialResponseDtoList", credentialResponseDtoList);
         model.addAttribute("fileResponseDtoList", fileResponseDtoList);
         model.addAttribute("uploadFileResponseDto", uploadFileResponseDto);
         return "home";
@@ -126,7 +144,36 @@ public class HomeController {
         var note = noteService.getNoteByNoteId(id);
         noteService.deleteNoteByNoteIdAndUserId(note.getNoteId());
         addAllAttributesModel(model);
-        logger.trace(" file deleted with id : " + id);
+        logger.trace(" note deleted with id : " + id);
+        return "home";
+    }
+
+    @PostMapping("/credential/addOrEdit")
+    public String addOrEditCredential(@ModelAttribute CredentialRequestDto credentialRequest, Model model) {
+        boolean hasCredentialId = credentialRequest.getCredentialId() != null;
+        if (hasCredentialId) {
+            editCredential(credentialRequest);
+        } else {
+            addCredential(credentialRequest);
+        }
+        addAllAttributesModel(model);
+        return "home";
+    }
+
+    private void addCredential(CredentialRequestDto credentialRequest) {
+        credentialService.add(credentialRequest.toCredential());
+    }
+
+    private void editCredential(CredentialRequestDto credentialRequest) {
+        credentialService.update(credentialRequest.toCredential());
+    }
+
+    @GetMapping("/credential/delete/{id}")
+    public String getHomeCredentialDelete(Model model, @PathVariable("id") Integer id) {
+        var credential = credentialService.getByCredentialId(id);
+        credentialService.deleteByCredentialIdAndUserId(credential.getCredentialId());
+        addAllAttributesModel(model);
+        logger.trace(" credential deleted with id : " + id);
         return "home";
     }
 }

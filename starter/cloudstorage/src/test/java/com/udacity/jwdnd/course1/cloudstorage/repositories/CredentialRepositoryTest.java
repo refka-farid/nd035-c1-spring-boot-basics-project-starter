@@ -4,7 +4,6 @@ import com.udacity.jwdnd.course1.cloudstorage.entities.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
-import com.udacity.jwdnd.course1.cloudstorage.services.credential.CredentialService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,28 +45,12 @@ class CredentialRepositoryTest {
     }
 
     @Test
-    void getByUrlTest() {
-        var result = sut.add(myCredential);
-        assertThat(result).isTrue();
-
-        var result2 = sut.getByUrl("https://login.oracle.com/mysso/signon.jsp");
-        assertThat(result2).isEqualTo(myCredential);
-
-    }
-
-    @Test
     void getByCredentialIdTest() {
         sut.add(myCredential);
-        var credential = sut.getByUrl(myCredential.getUrl());
-        var result = sut.getByCredentialId(credential.getCredentialId());
+        var user = mapperUser.getUserByUserName("lucie");
+        var credentialList = sut.getAll(user.getUserId());
+        var result = sut.getByCredentialId((credentialList.get(0)).getCredentialId());
         assertThat(result).isEqualTo(myCredential);
-    }
-
-    @Test
-    void getByUrlAndUserIdTest() {
-        sut.add(myCredential);
-        var credential = sut.getByUrlAndUserId(myCredential.getUserId(), myCredential.getUrl());
-        assertThat(credential).isEqualTo(myCredential);
     }
 
     @Test
@@ -82,26 +65,14 @@ class CredentialRepositoryTest {
     @Test
     void updateCredentialTest() {
         sut.add(myCredential);
-        var credential = sut.getByUrl(myCredential.getUrl());
+        var user = mapperUser.getUserByUserName("lucie");
+        var credentialList = sut.getAll(user.getUserId());
+        var credential = sut.getByCredentialId((credentialList.get(0)).getCredentialId());
         credential.setUserName("Admin2");
         var result = sut.updateCredential(credential);
-        var updatedCredential = sut.getByUrl(myCredential.getUrl());
+        var updatedCredential = sut.getByCredentialId((credentialList.get(0)).getCredentialId());
         assertThat(result).isTrue();
         assertThat(credential.getUserName()).isEqualTo(updatedCredential.getUserName());
-    }
-
-    @Test
-    void deleteByUrlTest() {
-        sut.add(myCredential);
-        var result = sut.deleteByUrl(myCredential.getUrl());
-        assertThat(result).isPositive();
-    }
-
-    @Test
-    void deleteByUrl2Test() {
-        sut.add(myCredential);
-        var result = sut.deleteByUrl2(myCredential.getUrl());
-        assertThat(result).isTrue();
     }
 
     @Test
@@ -114,7 +85,9 @@ class CredentialRepositoryTest {
     @Test
     void deleteByCredentialIdAndUserIdTest() {
         sut.add(myCredential);
-        var credential = sut.getByUrl(myCredential.getUrl());
+        var user = mapperUser.getUserByUserName("lucie");
+        var credentialList = sut.getAll(user.getUserId());
+        var credential = sut.getByCredentialId((credentialList.get(0)).getCredentialId());
         var result = sut.deleteByCredentialIdAndUserId(user.getUserId(), credential.getCredentialId());
         assertThat(result).isTrue();
     }

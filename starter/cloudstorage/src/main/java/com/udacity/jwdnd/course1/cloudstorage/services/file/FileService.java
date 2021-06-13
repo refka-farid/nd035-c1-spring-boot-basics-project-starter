@@ -30,14 +30,9 @@ public class FileService {
         return fileRepository.deleteFileByFileNameAndUserId(user.getUserId(), fileName);
     }
 
-    public File getFileByFileId(int fileId) {
-        return fileRepository.getByFileId(fileId);
-    }
-
     public File getFileByFileNameAndUserId(int fileId) {
         var user = userService.getAuthenticatedUser();
         var fileName = fileRepository.getByFileId(fileId).getFileName();
-//        var fileName = getFileByFileId(fileId).getFileName();
         return fileRepository.getFileByFileNameAndUserId(user.getUserId(), fileName);
     }
 

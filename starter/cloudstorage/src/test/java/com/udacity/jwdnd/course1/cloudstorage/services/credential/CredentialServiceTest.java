@@ -15,14 +15,12 @@ class CredentialServiceTest {
 
     private CredentialService sut;
     private CredentialRepository credentialRepositoryMock;
-    private EncryptionService encryptionService;
     private UserService userServiceMock;
-    private User user;
 
     @BeforeEach
     void setUp() {
         credentialRepositoryMock = mock(CredentialRepository.class);
-        encryptionService = new EncryptionService();
+        EncryptionService encryptionService = new EncryptionService();
         userServiceMock = mock(UserService.class);
         sut = new CredentialService(userServiceMock, credentialRepositoryMock, encryptionService);
 
@@ -40,32 +38,13 @@ class CredentialServiceTest {
         when(credentialRepositoryMock.getByCredentialId(100)).thenReturn(
                 myCredentialSample);
 
-        var result = sut.getUnencryptedCredentialPassword(myCredentialSample);
-        verify(credentialRepositoryMock).getByCredentialId(100);
+        var encryptedPassword = sut.getEncryptedCredentialPassword("azerty", "HIxi7PbCRU9uIyET6sdGEg==");
+        var result = sut.getUnencryptedCredentialPassword(encryptedPassword, "HIxi7PbCRU9uIyET6sdGEg==");
         assertThat(result).isEqualTo("azerty");
     }
 
     @Test
-    void getAuthenticatedUserTest() {
-        sut.getAuthenticatedUser();
-        verify(userServiceMock).getAuthenticatedUser();
-    }
-
-    @Test
-    void getByCredentialIdAndUserIdTest() {
-        Credential myCredentialSample = new Credential(100,
-                "https://login.oracle.com/mysso/signon.jsp",
-                "Admin",
-                "HIxi7PbCRU9uIyET6sdGEg==",
-                "azerty",
-                1
-        );
-        sut.getByCredentialIdAndUserId(myCredentialSample);
-        verify(credentialRepositoryMock).getByCredentialId(100);
-    }
-
-    @Test
-    void addOrUpdateTest() {
+    void updateTest() {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
@@ -77,15 +56,17 @@ class CredentialServiceTest {
                 1
         );
 
-        when(credentialRepositoryMock.getByCredentialId(100)).thenReturn(
-                myCredentialSample);
-        sut.addOrUpdate(myCredentialSample);
-        verify(credentialRepositoryMock).updateCredential(myCredentialSample);
+        Credential myCredentialSample2 = new Credential(100,
+                "https://login.oracle.com/mysso/signon.jsp",
+                "Admin",
+                "HIxi7PbCRU9uIyET6sdGEg==",
+                sut.getEncryptedCredentialPassword("azerty", "HIxi7PbCRU9uIyET6sdGEg=="),
+                1
+        );
 
-        when(credentialRepositoryMock.getByCredentialId(100)).thenReturn(
-                null);
-        sut.addOrUpdate(myCredentialSample);
-        verify(credentialRepositoryMock).add(argThat(argument -> argument.hashCode() != myCredentialSample.hashCode()));
+        when(credentialRepositoryMock.getByCredentialId(100)).thenReturn(myCredentialSample2);
+        sut.update(myCredentialSample);
+        verify(credentialRepositoryMock).updateCredential(myCredentialSample2);
     }
 
     @Test

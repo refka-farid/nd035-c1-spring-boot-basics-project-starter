@@ -1,7 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.repositories;
 
-import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class UserRepositoryTest {
 
     @Test
     void updateUserTest() {
-         sut.addAll(List.of(
+        sut.addAll(List.of(
                 User.from("eeeer_userName", "eeeer_password", "eeeer_firstName", "eeeer_lastName"),
                 User.from("rrrrr_userName", "rrrrr_password", "rrrrr_firstName", "rrrrr_lastName")
         ));

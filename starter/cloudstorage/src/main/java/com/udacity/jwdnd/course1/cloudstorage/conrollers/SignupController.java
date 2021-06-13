@@ -1,7 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
-import com.udacity.jwdnd.course1.cloudstorage.models.SignupResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.models.SignupRequestDto;
+import com.udacity.jwdnd.course1.cloudstorage.models.SignupResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.signup.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

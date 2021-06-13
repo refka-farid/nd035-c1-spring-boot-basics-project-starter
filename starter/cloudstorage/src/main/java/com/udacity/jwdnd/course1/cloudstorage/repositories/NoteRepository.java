@@ -33,17 +33,6 @@ public class NoteRepository {
         return id > 0;
     }
 
-    public boolean delete1(Note note) {
-        logger.trace("delete1 " + note);
-        return mapper.deleteByNoteTitle2(note.getNoteTitle());
-    }
-
-    public boolean delete2(Note note) {
-        logger.trace("delete2" + note);
-        int rows = mapper.deleteByNoteTitle(note.getNoteTitle());
-        return rows > 0;
-    }
-
     public boolean deleteAll() {
         logger.trace("deleteAll");
         return mapper.deleteAll();
@@ -61,16 +50,6 @@ public class NoteRepository {
     public Note getNoteByNoteTileAndUserId(Integer userId, String noteTitle) {
         logger.trace("getnoteBynoteTitleAndUserId " + userId + noteTitle);
         return mapper.getNoteByNoteTitleAndUserId(userId, noteTitle);
-    }
-
-    public Note updateOrNull(Note note) {
-        logger.trace("updateOrNull " + note);
-        boolean isUpdated = mapper.updateNote(note);
-        if (isUpdated) {
-            return mapper.getByNoteTitle(note.getNoteTitle());
-        } else {
-            return null;
-        }
     }
 
     public Note addOrUpdate(Note note) {

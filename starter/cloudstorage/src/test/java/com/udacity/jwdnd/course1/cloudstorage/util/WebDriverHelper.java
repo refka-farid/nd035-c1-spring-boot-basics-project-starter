@@ -16,4 +16,17 @@ public class WebDriverHelper {
                 }
         );
     }
+
+    public static void wait_s(WebDriver driver, int millis) {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(webDriver -> {
+                    try {
+                        Thread.sleep(millis);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+        );
+    }
 }

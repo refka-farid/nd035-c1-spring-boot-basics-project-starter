@@ -9,13 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.inject.Inject;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 //this is not a test class  it's just a workaround to create some fake data in order to build the controllers
 @SpringBootTest
 @ActiveProfiles(profiles = {"dev"})

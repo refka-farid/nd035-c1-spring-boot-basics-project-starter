@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.getOneByUserName(username);
     }
 
-    public User getAuthenticatedUser(){
+    public User getAuthenticatedUser() {
         return getOneByUserName(getAuthenticatedUserName());
     }
 

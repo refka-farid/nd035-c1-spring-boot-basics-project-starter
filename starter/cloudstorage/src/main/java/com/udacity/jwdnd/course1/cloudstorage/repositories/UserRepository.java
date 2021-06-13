@@ -33,8 +33,7 @@ public class UserRepository {
     public boolean addAll(List<User> userList) {
         logger.trace("addAll " + userList);
         Stream<Integer> integerStream = userList.stream().map(mapper::addUser);
-        boolean allMatch = integerStream.allMatch(this::isPositive);
-        return allMatch;
+        return integerStream.allMatch(this::isPositive);
     }
 
     private boolean isPositive(int x) {
@@ -43,8 +42,7 @@ public class UserRepository {
 
     public boolean delete1(User user) {
         logger.trace("delete1 " + user);
-        boolean isDeleted = mapper.deleteUserByUserName2(user.getUserName());
-        return isDeleted;
+        return mapper.deleteUserByUserName2(user.getUserName());
     }
 
     public boolean delete2(User user) {
@@ -55,12 +53,11 @@ public class UserRepository {
 
     public boolean deleteAll() {
         logger.trace("deleteAll");
-        boolean allDeleted = mapper.deleteAll();
-        return allDeleted;
+        return mapper.deleteAll();
     }
 
     public User updateOrNull(User user) {
-        logger.trace("updateOrNull "+user);
+        logger.trace("updateOrNull " + user);
         boolean isUpdated = mapper.updateUser(user);
         if (isUpdated) {
             return mapper.getUserByUserName(user.getUserName());
@@ -70,8 +67,8 @@ public class UserRepository {
     }
 
     public User addOrUpdate(User user) {
-        logger.trace("addOrUpdate "+user);
-        User storedUser = mapper.getUserByUserName(user.getUserName());
+        logger.trace("addOrUpdate " + user);
+        var storedUser = mapper.getUserByUserName(user.getUserName());
         if (storedUser == null) {
             mapper.addUser(user);
         } else {

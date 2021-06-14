@@ -141,6 +141,10 @@ class HomeE2ETest {
 
     @Test
     void check_noteFeature() {
+        credentialMapper.deleteAll();
+        noteMapper.deleteAll();
+        fileMapper.deleteAll();
+        userMapper.deleteAll();
         var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
         userMapper.addUser(user2);
         driver.get("http://localhost:" + port + "/login");
@@ -151,6 +155,7 @@ class HomeE2ETest {
         driver.get("http://localhost:" + port + "/home");
 
         /*Add new note Test block*/
+        /*Add new note*/
         WebDriverWait wait = new WebDriverWait(driver, 1000);
         WebElement marker = wait.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab")));
         marker.sendKeys("Notes");
@@ -190,6 +195,39 @@ class HomeE2ETest {
         assertThat(list.get(0).getNoteTitle()).isEqualTo("FIRST NOTE");
         assertThat(msgSuccessAdd).isEqualTo("Your New Note was successfully added.");
         assertThat(list.get(0).getNoteDescription()).isEqualTo("This is a description of myNote");
+
+        /*Add duplicated note*/
+        WebElement addNewNoteDuplicate = driver.findElement(By.id("add_new_note"));
+        JavascriptExecutor jse1Duplicate = (JavascriptExecutor) driver;
+        jse1Duplicate.executeScript("arguments[0].click();", addNewNoteDuplicate);
+
+        WebElement noteTitleInputDuplicate = driver.findElement(By.id("note-title"));
+        String inputTextDuplicate = "FIRST NOTE";
+        noteTitleInputDuplicate.getAttribute("noteTitle");
+        JavascriptExecutor jse2Duplicate = (JavascriptExecutor) driver;
+        jse2Duplicate.executeScript("arguments[1].value = arguments[0]; ", inputTextDuplicate, noteTitleInputDuplicate);
+        driver.switchTo().defaultContent();
+
+        WebElement noteDescriptionTxtAreaDuplicate = driver.findElement(By.id("note-description"));
+        String inputText2Duplicate = "This is a description of myNote duplicate";
+        noteDescriptionTxtAreaDuplicate.getAttribute("noteDescription");
+        JavascriptExecutor jse3Duplicate = (JavascriptExecutor) driver;
+        jse3Duplicate.executeScript("arguments[1].value = arguments[0]; ", inputText2Duplicate, noteDescriptionTxtAreaDuplicate);
+        driver.switchTo().defaultContent();
+
+        WebElement noteSubmitDuplicate = driver.findElement(By.id("noteSubmit"));
+        JavascriptExecutor jse4Duplicate = (JavascriptExecutor) driver;
+        jse4Duplicate.executeScript("arguments[0].click();", noteSubmitDuplicate);
+
+        WebElement navNotesDuplicate = driver.findElement(By.id("nav-notes-tab"));
+        JavascriptExecutor jse5Duplicate = (JavascriptExecutor) driver;
+        jse5Duplicate.executeScript("arguments[0].click();", navNotesDuplicate);
+
+        WebDriverHelper.wait_s(driver, 5_000);
+        WebElement successCrudNoteAddDuplicate =  driver.findElement(By.id("error-crud-note"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessAddDuplicate = successCrudNoteAddDuplicate.getText();
+        assertThat(msgSuccessAddDuplicate).isEqualTo("Note already available!");
 
         /*Edit Note Test Block*/
         WebDriverWait waitEdit = new WebDriverWait(driver, 1000);

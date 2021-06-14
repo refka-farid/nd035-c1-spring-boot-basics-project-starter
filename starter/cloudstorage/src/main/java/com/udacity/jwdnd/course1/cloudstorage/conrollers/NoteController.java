@@ -1,6 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
 import com.udacity.jwdnd.course1.cloudstorage.conrollers.util.HomeAttributesModel;
+import com.udacity.jwdnd.course1.cloudstorage.entities.Note;
 import com.udacity.jwdnd.course1.cloudstorage.models.NoteRequestDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.credential.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.file.FileService;
@@ -33,8 +34,20 @@ public class NoteController {
             editNote(noteRequest);
             redirAttrs.addFlashAttribute("success", "Your changes was successfully saved.");
         } else {
-            addNote(noteRequest);
-            redirAttrs.addFlashAttribute("success", "Your New Note was successfully added.");
+            var noteList = noteService.getAllAuthenticatedUserNote();
+            if(!noteList.isEmpty()){
+                for (Note note:noteList) {
+                    if (note.getNoteTitle().trim().equals(noteRequest.getNoteTitle().trim()) || note.getNoteDescription().trim().equals(noteRequest.getNoteDescription().trim())){
+                        redirAttrs.addFlashAttribute("error", "Note already available!");
+                    }else{
+                        addNote(noteRequest);
+                        redirAttrs.addFlashAttribute("success", "Your New Note was successfully added.");
+                    }
+                }
+            }else{
+                addNote(noteRequest);
+                redirAttrs.addFlashAttribute("success", "Your New Note was successfully added.");
+            }
         }
         homeAttributesModel.addAllAttributesModel(model);
         return "redirect:/home/";

@@ -7,6 +7,7 @@ import com.udacity.jwdnd.course1.cloudstorage.services.signup.UserService;
 import com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.EncryptionService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.udacity.jwdnd.course1.cloudstorage.services.utilsecurity.RandomKey.getBase64EncodedKey;
@@ -66,5 +67,28 @@ public class CredentialService {
 
     public Credential getByCredentialId(Integer id) {
         return credentialRepository.getByCredentialId(id);
+    }
+
+    public List<Credential> getByCredentialUrl(String url) {
+        var user = userService.getAuthenticatedUser();
+        return credentialRepository.getByUrlAndUserId(user.getUserId(), url);
+    }
+
+    public boolean isValidCredential(Credential credential, String url) {
+        var storedCredential = getByCredentialUrl(url.trim());
+        var duplicatedCredential = new ArrayList<>();
+        var hasDuplicateUrl = !storedCredential.isEmpty();
+        if (hasDuplicateUrl) {
+            for (Credential item : storedCredential) {
+                if (item.getUserName().trim().equals(credential.getUserName().trim())
+                        && item.getUrl().trim().equals(credential.getUrl().trim())
+                ) {
+                    duplicatedCredential.add(item);
+                }
+            }
+        } else {
+            return true;
+        }
+        return duplicatedCredential.isEmpty();
     }
 }

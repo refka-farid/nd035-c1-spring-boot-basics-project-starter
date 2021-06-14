@@ -15,7 +15,7 @@ public interface CredentialMapper {
     Credential getByCredentialId(int credentialId);
 
     @Select("SELECT * FROM CREDENTIALS WHERE userid = #{userId} AND url = #{url}")
-    Credential getByUrlAndUserId(Integer userId, String url);
+    List<Credential> getByUrlAndUserId(Integer userId, String url);
 
     @Select("SELECT * FROM CREDENTIALS WHERE userid = #{userId} ")
     List<Credential> getAll(int userId);

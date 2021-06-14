@@ -9,6 +9,7 @@ import com.udacity.jwdnd.course1.cloudstorage.services.note.NoteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/home")
@@ -19,20 +20,31 @@ public class CredentialController {
 
     public CredentialController(FileTypeLoader fileTypeLoader, FileService fileService, NoteService noteService, CredentialService credentialService) {
         this.credentialService = credentialService;
-        homeAttributesModel = new HomeAttributesModel(fileTypeLoader,fileService,noteService,credentialService);
+        homeAttributesModel = new HomeAttributesModel(fileTypeLoader, fileService, noteService, credentialService);
 
     }
 
     @PostMapping("/credential/addOrEdit")
-    public String addOrEditCredential(@ModelAttribute CredentialRequestDto credentialRequest, Model model) {
+    public String addOrEditCredential(@ModelAttribute CredentialRequestDto credentialRequest, Model model, RedirectAttributes redirAttrs) {
         boolean hasCredentialId = credentialRequest.getCredentialId() != null;
+        var isValidCredential = credentialService.isValidCredential(credentialRequest.toCredential(), credentialRequest.getUrl());
         if (hasCredentialId) {
-            editCredential(credentialRequest);
+            if (isValidCredential) {
+                editCredential(credentialRequest);
+                redirAttrs.addFlashAttribute("success", "Your changes was successfully saved.");
+            } else {
+                redirAttrs.addFlashAttribute("error", "User already available!");
+            }
         } else {
-            addCredential(credentialRequest);
+            if (isValidCredential) {
+                addCredential(credentialRequest);
+                redirAttrs.addFlashAttribute("success", "Your New Credential was successfully added.");
+            } else {
+                redirAttrs.addFlashAttribute("error", "User already available!");
+            }
         }
         homeAttributesModel.addAllAttributesModel(model);
-        return "home";
+        return "redirect:/home/";
     }
 
     private void addCredential(CredentialRequestDto credentialRequest) {
@@ -44,10 +56,11 @@ public class CredentialController {
     }
 
     @GetMapping("/credential/delete/{id}")
-    public String getHomeCredentialDelete(Model model, @PathVariable("id") Integer id) {
+    public String getHomeCredentialDelete(Model model, @PathVariable("id") Integer id, RedirectAttributes redirAttrs) {
         var credential = credentialService.getByCredentialId(id);
         credentialService.deleteByCredentialIdAndUserId(credential.getCredentialId());
+        redirAttrs.addFlashAttribute("success", "Your credential was successfully deleted.");
         homeAttributesModel.addAllAttributesModel(model);
-        return "home";
+        return "redirect:/home/";
     }
 }

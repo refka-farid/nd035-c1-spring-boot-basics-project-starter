@@ -24,6 +24,10 @@ public class CredentialRepository {
         return mapper.getByCredentialId(credentialId);
     }
 
+    public List<Credential> getByUrlAndUserId(Integer userId, String url) {
+        return mapper.getByUrlAndUserId(userId , url);
+    }
+
     public List<Credential> getAll(int userId) {
         return mapper.getAll(userId);
     }

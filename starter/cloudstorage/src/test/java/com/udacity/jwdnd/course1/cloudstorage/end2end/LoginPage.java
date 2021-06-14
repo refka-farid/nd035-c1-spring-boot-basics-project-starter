@@ -10,6 +10,9 @@ public class LoginPage {
     @FindBy(id = "error-msg")
     public WebElement errorMsg;
 
+    @FindBy(id = "registration-msg")
+    public WebElement registrationMsg;
+
     @FindBy(id = "logout-msg")
     public WebElement logoutMsg;
 

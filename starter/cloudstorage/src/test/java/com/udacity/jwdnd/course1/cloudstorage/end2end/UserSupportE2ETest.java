@@ -1,6 +1,8 @@
 package com.udacity.jwdnd.course1.cloudstorage.end2end;
 
+import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.models.SignupRequestDto;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -24,8 +26,15 @@ class UserSupportE2ETest {
 
     @Inject
     private UserMapper userMapper;
+
     @Inject
     private FileMapper fileMapper;
+
+    @Inject
+    private NoteMapper noteMapper;
+
+    @Inject
+    private CredentialMapper credentialMapper;
 
     private SignupPage signupPage;
     private LoginPage loginPage;
@@ -51,17 +60,25 @@ class UserSupportE2ETest {
 
     @AfterEach
     public void afterEach() {
+        noteMapper.deleteAll();
+        credentialMapper.deleteAll();
         fileMapper.deleteAll();
         userMapper.deleteAll();
     }
 
     @Test
-    void registerNewUserShouldShowSuccess() {
+    void registerNewUserShouldRedirectToLogin() {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
-        String prevValue = signupPage.getSuccessMsg();
-        assertEquals("You successfully signed up! Please continue to the login page.", prevValue);
+
+        String redirected_url = driver.getCurrentUrl();
+        assertThat(redirected_url).contains("/login");
+
+        loginPage = new LoginPage(driver);
+        var successMsg = loginPage.registrationMsg.getText();
+        assertEquals("You successfully signed up!", successMsg);
+
     }
 
     @Test
@@ -69,6 +86,10 @@ class UserSupportE2ETest {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
+
+        loginPage = new LoginPage(driver);
+        loginPage.signupLink();
+
         signupPage.registerUser(user);
         signupPage.submit();
 
@@ -81,8 +102,6 @@ class UserSupportE2ETest {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
-        signupPage.goToLogin();
-        driver.get("http://localhost:" + port + "/login");
 
         loginPage = new LoginPage(driver);
         loginPage.loginUser("Franci", "1234Hashed");
@@ -95,8 +114,6 @@ class UserSupportE2ETest {
         var user = new SignupRequestDto("Francis", "1234Hashed", "Francis", "Babier");
         signupPage.registerUser(user);
         signupPage.submit();
-        signupPage.goToLogin();
-        driver.get("http://localhost:" + port + "/login");
 
         loginPage = new LoginPage(driver);
         loginPage.loginUser("Francis", "1234Hashed");

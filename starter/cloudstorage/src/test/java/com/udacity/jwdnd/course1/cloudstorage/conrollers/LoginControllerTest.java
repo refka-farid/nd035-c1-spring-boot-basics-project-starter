@@ -1,7 +1,11 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
+import com.udacity.jwdnd.course1.cloudstorage.models.SignupResponseDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,11 +33,23 @@ class LoginControllerTest {
     WebApplicationContext context;
 
     @Inject
-    private UserMapper mapper;
+    private UserMapper userMapper;
+
+    @Inject
+    private FileMapper fileMapper;
+
+    @Inject
+    private NoteMapper noteMapper;
+
+    @Inject
+    private CredentialMapper credentialMapper;
 
     @AfterEach
     void tearDown() {
-        mapper.deleteAll();
+        noteMapper.deleteAll();
+        credentialMapper.deleteAll();
+        fileMapper.deleteAll();
+        userMapper.deleteAll();
     }
 
     private static MockMvc mockMvc;
@@ -55,7 +72,7 @@ class LoginControllerTest {
 
     @Test
     void check_loginUser_POST_when_success() throws Exception {
-        mapper.addUser(new User(null, "leticia", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "leticia", "leticia"));
+        userMapper.addUser(new User(null, "leticia", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "leticia", "leticia"));
 
         mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

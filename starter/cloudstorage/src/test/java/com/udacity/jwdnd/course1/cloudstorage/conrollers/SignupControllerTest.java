@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
+import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import com.udacity.jwdnd.course1.cloudstorage.models.SignupResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.signup.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +16,7 @@ import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -94,7 +94,7 @@ class SignupControllerTest {
     @Test
     void verify_signupUser_should_showSuccess_When_userIsNotCreated() throws Exception {
         given(userServiceMock.isUsernameAvailable(anyString())).willReturn(true);
-        given(userServiceMock.createUser(any())).willReturn(true);
+        given(userServiceMock.createUser(any(User.class))).willReturn(true);
 
         SignupResponseDto expected = new SignupResponseDto();
         expected.setSuccessSignup(true);
@@ -105,8 +105,8 @@ class SignupControllerTest {
                 .param("lastName", "peter")
                 .param("userName", "peter")
                 .param("password", "peter"))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("responseModel", is(expected)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(model().attributeDoesNotExist("responseModel"))
         ;
     }
 

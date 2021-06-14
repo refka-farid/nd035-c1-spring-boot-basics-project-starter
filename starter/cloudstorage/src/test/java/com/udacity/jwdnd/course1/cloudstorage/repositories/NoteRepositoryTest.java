@@ -2,6 +2,8 @@ package com.udacity.jwdnd.course1.cloudstorage.repositories;
 
 import com.udacity.jwdnd.course1.cloudstorage.entities.Note;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +27,12 @@ class NoteRepositoryTest {
     @Inject
     private UserMapper mapperUser;
 
+    @Inject
+    private FileMapper mapperFile;
+
+    @Inject
+    private CredentialMapper mapperCredential;
+
     private NoteRepository sut;
 
     private Note myTestedNote;
@@ -40,6 +48,8 @@ class NoteRepositoryTest {
 
     @AfterEach
     void tearDown() {
+        mapperFile.deleteAll();
+        mapperCredential.deleteAll();
         mapperNote.deleteAll();
         mapperUser.deleteAll();
     }

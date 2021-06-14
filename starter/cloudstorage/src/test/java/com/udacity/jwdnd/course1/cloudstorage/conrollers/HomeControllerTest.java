@@ -155,10 +155,10 @@ class HomeControllerTest {
                 .param("noteTitle", note.getNoteTitle())
                 .param("noteDescription", note.getNoteDescription())
         )
-                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
-                .andExpect(status().isOk());
+//                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
+//                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
+//                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
+                .andExpect(status().is3xxRedirection());
         verify(noteServiceMock).addNote(argThat(argument ->
                 argument.getNoteTitle().equals(note.getNoteTitle()) &&
                         argument.getNoteDescription().equals(note.getNoteDescription())
@@ -188,11 +188,12 @@ class HomeControllerTest {
                 .param("noteTitle", note.getNoteTitle())
                 .param("noteDescription", note.getNoteDescription())
         )
-                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
-                .andExpect(status().isOk());
+//                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
+//                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
+//                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
+                .andExpect(status().is3xxRedirection());
         verify(noteServiceMock).update(argThat(argument -> argument.getNoteId().equals(note.getNoteId())));
+
     }
 
     @WithMockUser(username = "z")
@@ -203,7 +204,7 @@ class HomeControllerTest {
 
         mockMvc.perform(get("/home/note/delete/100")
                 .param("id", "100"))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
         verify(noteServiceMock).getNoteByNoteId(100);
         verify(noteServiceMock).deleteNoteByNoteIdAndUserId(100);
     }

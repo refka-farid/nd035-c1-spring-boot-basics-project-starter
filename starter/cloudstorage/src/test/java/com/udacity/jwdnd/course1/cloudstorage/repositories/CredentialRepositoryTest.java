@@ -3,6 +3,8 @@ package com.udacity.jwdnd.course1.cloudstorage.repositories;
 import com.udacity.jwdnd.course1.cloudstorage.entities.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.entities.User;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.CredentialMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.FileMapper;
+import com.udacity.jwdnd.course1.cloudstorage.mappers.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.mappers.UserMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CredentialRepositoryTest {
 
     @Inject
-    private CredentialMapper mapperCredential;
+    private NoteMapper mapperNote;
 
     @Inject
     private UserMapper mapperUser;
+
+    @Inject
+    private FileMapper mapperFile;
+
+    @Inject
+    private CredentialMapper mapperCredential;
 
     private CredentialRepository sut;
 
@@ -40,7 +48,9 @@ class CredentialRepositoryTest {
 
     @AfterEach
     void tearDown() {
+        mapperFile.deleteAll();
         mapperCredential.deleteAll();
+        mapperNote.deleteAll();
         mapperUser.deleteAll();
     }
 

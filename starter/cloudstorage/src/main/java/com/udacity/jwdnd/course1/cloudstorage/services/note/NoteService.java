@@ -41,16 +41,17 @@ public class NoteService {
         return noteRepository.add(note);
     }
 
-    public void addOrUpdate(Note note) {
-        noteRepository.addOrUpdate(note);
+    public Note addOrUpdate(Note note) {
+        return noteRepository.addOrUpdate(note);
     }
 
-    public void update(Note note) {
+    public boolean update(Note note) {
         var noteToUpdate = getNoteByNoteId(note.getNoteId());
         noteToUpdate.setNoteTitle(note.getNoteTitle());
         noteToUpdate.setNoteDescription(note.getNoteDescription());
         noteToUpdate.setUserId(userService.getAuthenticatedUser().getUserId());
-        addOrUpdate(noteToUpdate);
+        var updatedNote = addOrUpdate(noteToUpdate);
+        return updatedNote != null;
     }
 
     public boolean deleteNoteByNoteIdAndUserId(int noteId) {

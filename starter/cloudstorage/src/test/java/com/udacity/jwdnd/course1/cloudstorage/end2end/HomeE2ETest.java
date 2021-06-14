@@ -182,8 +182,13 @@ class HomeE2ETest {
         JavascriptExecutor jse5 = (JavascriptExecutor) driver;
         jse5.executeScript("arguments[0].click();", navNotes);
 
+        WebElement successCrudNoteAdd =  driver.findElement(By.id("success-crud-note"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessAdd = successCrudNoteAdd.getText();
+
         List<Note> list = noteMapper.getAll(user2.getUserId());
         assertThat(list.get(0).getNoteTitle()).isEqualTo("FIRST NOTE");
+        assertThat(msgSuccessAdd).isEqualTo("Your New Note was successfully added.");
         assertThat(list.get(0).getNoteDescription()).isEqualTo("This is a description of myNote");
 
         /*Edit Note Test Block*/
@@ -207,6 +212,15 @@ class HomeE2ETest {
         JavascriptExecutor jse8 = (JavascriptExecutor) driver;
         jse8.executeScript("arguments[0].click();", noteSubmitEdit);
 
+        WebElement navToNote = driver.findElement(By.id("nav-notes-tab"));
+        JavascriptExecutor jseNavToNote = (JavascriptExecutor) driver;
+        jseNavToNote.executeScript("arguments[0].click();", navToNote);
+
+        WebElement successCrudNoteEdit =  driver.findElement(By.id("success-crud-note"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessEdit = successCrudNoteEdit.getText();
+
+        assertThat(msgSuccessEdit).isEqualTo("Your changes was successfully saved.");
         List<Note> listEdit = noteMapper.getAll(user2.getUserId());
         assertThat(listEdit.get(0).getNoteTitle()).isEqualTo("THIS EDIT TITLE");
 
@@ -214,6 +228,16 @@ class HomeE2ETest {
         WebElement deleteNoteBtn = driver.findElement(By.id("delete_note"));
         JavascriptExecutor jse5Delete = (JavascriptExecutor) driver;
         jse5Delete.executeScript("arguments[0].click();", deleteNoteBtn);
+
+        WebElement navToNote2 = driver.findElement(By.id("nav-notes-tab"));
+        JavascriptExecutor jseNavToNote2 = (JavascriptExecutor) driver;
+        jseNavToNote2.executeScript("arguments[0].click();", navToNote2);
+
+        WebElement successCrudNoteDelete =  driver.findElement(By.id("success-crud-note"));
+        WebDriverHelper.wait_s(driver, 1_000);
+
+        var msgSuccessDelete = successCrudNoteDelete.getText();
+        assertThat(msgSuccessDelete).isEqualTo("Your Note was successfully deleted.");
         List<Note> listDelete = noteMapper.getAll(user2.getUserId());
         assertThat(listDelete).isEmpty();
 

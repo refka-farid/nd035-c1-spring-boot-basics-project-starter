@@ -293,6 +293,7 @@ class HomeE2ETest {
         driver.get("http://localhost:" + port + "/home");
 
         /*Add new credential Test block*/
+        /*Add new credential*/
         WebDriverWait wait = new WebDriverWait(driver, 1000);
         WebElement marker = wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab")));
         marker.sendKeys("Credentials");
@@ -331,9 +332,56 @@ class HomeE2ETest {
         JavascriptExecutor jse6 = (JavascriptExecutor) driver;
         jse6.executeScript("arguments[0].click();", navToCredentials);
 
+        WebElement successCrudCredentialAdd =  driver.findElement(By.id("success-crud-credential"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessAdd = successCrudCredentialAdd.getText();
+
         List<Credential> list = credentialMapper.getAll(user2.getUserId());
         assertThat(list.get(0).getUrl()).isEqualTo("https://intellij-support.jetbrains.com/hc/en-us");
+        assertThat(msgSuccessAdd).isEqualTo("Your New Credential was successfully added.");
         assertThat(list.get(0).getUserName()).isEqualTo("Admin");
+
+        /*Add duplicated credential*/
+
+        WebElement addNewCredentialDuplicate = driver.findElement(By.id("add_new_credential"));
+        JavascriptExecutor jse1Duplicate = (JavascriptExecutor) driver;
+        jse1Duplicate.executeScript("arguments[0].click();", addNewCredentialDuplicate);
+
+        WebElement credentialUrlDuplicate = driver.findElement(By.id("credential-url"));
+        String inputTextDuplicate = "https://intellij-support.jetbrains.com/hc/en-us";
+        credentialUrlDuplicate.getAttribute("url");
+        JavascriptExecutor jse2Duplicate = (JavascriptExecutor) driver;
+        jse2Duplicate.executeScript("arguments[1].value = arguments[0]; ", inputTextDuplicate, credentialUrlDuplicate);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialUsernameDuplicate = driver.findElement(By.id("credential-username"));
+        String inputText2Duplicate = "Admin";
+        credentialUsernameDuplicate.getAttribute("username");
+        JavascriptExecutor jse3Duplicate = (JavascriptExecutor) driver;
+        jse3Duplicate.executeScript("arguments[1].value = arguments[0]; ", inputText2Duplicate, credentialUsernameDuplicate);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialPasswordDuplicate = driver.findElement(By.id("credential-password"));
+        String inputText3Duplicate = "1234";
+        credentialPasswordDuplicate.getAttribute("password");
+        JavascriptExecutor jse4Duplicate = (JavascriptExecutor) driver;
+        jse4Duplicate.executeScript("arguments[1].value = arguments[0]; ", inputText3Duplicate, credentialPasswordDuplicate);
+        driver.switchTo().defaultContent();
+
+        WebElement credentialSubmitDuplicate = driver.findElement(By.id("credentialSubmit"));
+        JavascriptExecutor jse5Duplicate = (JavascriptExecutor) driver;
+        jse5Duplicate.executeScript("arguments[0].click();", credentialSubmitDuplicate);
+
+        WebElement navToCredentialsDuplicate = driver.findElement(By.id("nav-credentials-tab"));
+        JavascriptExecutor jse6Duplicate = (JavascriptExecutor) driver;
+        jse6Duplicate.executeScript("arguments[0].click();", navToCredentialsDuplicate);
+
+        WebDriverHelper.wait_s(driver, 1_000);
+        WebElement errorCrudCredentialAdd =  driver.findElement(By.id("error-crud-credential"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgErrorAddDuplicate = errorCrudCredentialAdd.getText();
+        assertThat(msgErrorAddDuplicate).isEqualTo("User already available!");
+
 
         /*Edit Credential Test Block*/
         WebDriverWait waitEdit = new WebDriverWait(driver, 1000);
@@ -368,13 +416,34 @@ class HomeE2ETest {
         JavascriptExecutor jse9 = (JavascriptExecutor) driver;
         jse9.executeScript("arguments[0].click();", credentialSubmit2);
 
+        WebElement navToCredentialsEdit = driver.findElement(By.id("nav-credentials-tab"));
+        JavascriptExecutor jse6Edit = (JavascriptExecutor) driver;
+        jse6Edit.executeScript("arguments[0].click();", navToCredentialsEdit);
+
+        WebDriverHelper.wait_s(driver, 1_000);
+        WebElement successCrudCredentialEdit =  driver.findElement(By.id("success-crud-credential"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessEdit = successCrudCredentialEdit.getText();
+
+        assertThat(msgSuccessEdit).isEqualTo("Your changes was successfully saved.");
         List<Credential> listEdited = credentialMapper.getAll(user2.getUserId());
         assertThat(listEdited.get(0).getUserName()).isEqualTo("SimpleUser");
 
-        /*Delete Credential Test Block*/
+//        /*Delete Credential Test Block*/
         WebElement deleteCredentialBtn = driver.findElement(By.id("delete_credential"));
         JavascriptExecutor jse10Delete = (JavascriptExecutor) driver;
         jse10Delete.executeScript("arguments[0].click();", deleteCredentialBtn);
+
+        WebElement navToCredentialsDelete = driver.findElement(By.id("nav-credentials-tab"));
+        JavascriptExecutor jse6Delete = (JavascriptExecutor) driver;
+        jse6Delete.executeScript("arguments[0].click();", navToCredentialsDelete);
+
+        WebDriverHelper.wait_s(driver, 1_000);
+        WebElement successCrudCredentialDelete =  driver.findElement(By.id("success-crud-credential"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessDelete = successCrudCredentialDelete.getText();
+
+        assertThat(msgSuccessDelete).isEqualTo("Your credential was successfully deleted.");
         List<Note> listDelete = noteMapper.getAll(user2.getUserId());
         assertThat(listDelete).isEmpty();
     }

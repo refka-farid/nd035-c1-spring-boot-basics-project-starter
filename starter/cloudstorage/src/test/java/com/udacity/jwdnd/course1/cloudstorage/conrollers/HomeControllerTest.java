@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
+import com.udacity.jwdnd.course1.cloudstorage.entities.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.models.CredentialResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.models.FileResponseDto;
 import com.udacity.jwdnd.course1.cloudstorage.models.NoteResponseDto;
@@ -27,7 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -155,15 +156,9 @@ class HomeControllerTest {
                 .param("noteTitle", note.getNoteTitle())
                 .param("noteDescription", note.getNoteDescription())
         )
-//                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-//                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-//                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
                 .andExpect(status().is3xxRedirection());
-        verify(noteServiceMock).addNote(argThat(argument ->
-                argument.getNoteTitle().equals(note.getNoteTitle()) &&
-                        argument.getNoteDescription().equals(note.getNoteDescription())
-        ));
-        verify(noteServiceMock).getAllAuthenticatedUserNote();
+        verify(noteServiceMock).addNote(note);
+        verify(noteServiceMock, times(2)).getAllAuthenticatedUserNote();
 
     }
 
@@ -181,16 +176,12 @@ class HomeControllerTest {
         var note = NoteFactory.createNoteWithNoteId();
         var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
 
-
         mockMvc.perform(post("/home/note/addOrEdit")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("noteId", "100")
                 .param("noteTitle", note.getNoteTitle())
                 .param("noteDescription", note.getNoteDescription())
         )
-//                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-//                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-//                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
                 .andExpect(status().is3xxRedirection());
         verify(noteServiceMock).update(argThat(argument -> argument.getNoteId().equals(note.getNoteId())));
 
@@ -212,37 +203,18 @@ class HomeControllerTest {
     @WithMockUser(username = "z")
     @Test
     void addCredentialTest() throws Exception {
-        given(credentialServiceMock.getByCredentialId(100)).willReturn(CredentialFactory.createCredentialWithoutCredentialId());
-
-        given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
-        var list = FileFactory.createFileList();
-        var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
-
-        given(noteServiceMock.getAllAuthenticatedUserNote()).willReturn(NoteFactory.createNoteList());
-        var list2 = NoteFactory.createNoteList();
-        var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
-
-        given(credentialServiceMock.getAllAuthenticatedUserCredential()).willReturn(CredentialFactory.createListOfCredential());
-        var list3 = CredentialFactory.createListOfCredential();
-        var mCredential = CredentialFactory.createCredentialWithoutCredentialId();
-        var credentialResponseDtoList = list3.stream().map(credential -> CredentialResponseDto.fromCredential(credential, "azerty", null)).collect(Collectors.toList());
-
+        var credential = CredentialFactory.createCredentialWithoutCredentialId();
+        given(credentialServiceMock.getByCredentialId(100)).willReturn(credential);
+        given(credentialServiceMock.isValidCredential(any(Credential.class), anyString())).willReturn(true);
         mockMvc.perform(post("/home/credential/addOrEdit")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("credentialId", (String) null)
-                .param("url", mCredential.getUrl())
-                .param("username", mCredential.getUserName())
-                .param("password", mCredential.getPassword())
+                .param("url", credential.getUrl())
+                .param("username", credential.getUserName())
+                .param("password", credential.getPassword())
         )
-                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
-                .andExpect(model().attribute("credentialResponseDtoList", is(credentialResponseDtoList)))
-                .andExpect(status().isOk());
-        verify(credentialServiceMock).add(argThat(argument ->
-                argument.getUrl().equals(mCredential.getUrl()) &&
-                        argument.getUserName().equals(mCredential.getUserName())
-        ));
+                .andExpect(status().is3xxRedirection());
+        verify(credentialServiceMock).add(argThat(argument -> argument.getUserName().equals(credential.getUserName())));
         verify(credentialServiceMock).getAllAuthenticatedUserCredential();
 
     }
@@ -250,39 +222,19 @@ class HomeControllerTest {
     @WithMockUser(username = "z")
     @Test
     void updateCredentialTest() throws Exception {
-        given(credentialServiceMock.getByCredentialId(100)).willReturn(CredentialFactory.createCredentialWithCredentialId());
-
-        given(fileServiceMock.getAllAuthenticatedUserFiles()).willReturn(FileFactory.createFileList());
-        var list = FileFactory.createFileList();
-        var fileResponseDtoList = list.stream().map(FileResponseDto::fromFile).collect(Collectors.toList());
-
-        given(noteServiceMock.getAllAuthenticatedUserNote()).willReturn(NoteFactory.createNoteList());
-        var list2 = NoteFactory.createNoteList();
-        var noteResponseDtoList = list2.stream().map(NoteResponseDto::fromNote).collect(Collectors.toList());
-
-        given(credentialServiceMock.getAllAuthenticatedUserCredential()).willReturn(CredentialFactory.createListOfCredential());
-        var list3 = CredentialFactory.createListOfCredential();
-        var mCredential = CredentialFactory.createCredentialWithoutCredentialId();
-        var credentialResponseDtoList = list3.stream().map(credential -> CredentialResponseDto.fromCredential(credential, "azerty", null)).collect(Collectors.toList());
-
+        var credential = CredentialFactory.createCredentialWithCredentialId();
+        given(credentialServiceMock.isValidCredential(any(Credential.class), anyString())).willReturn(true);
+        given(credentialServiceMock.getByCredentialId(100)).willReturn(credential);
         mockMvc.perform(post("/home/credential/addOrEdit")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("credentialId", "100")
-                .param("url", mCredential.getUrl())
-                .param("username", mCredential.getUserName())
-                .param("password", mCredential.getPassword())
+                .param("url", credential.getUrl())
+                .param("username", credential.getUserName())
+                .param("password", credential.getPassword())
         )
-                .andExpect(model().attribute("noteResponseDtoList", is(noteResponseDtoList)))
-                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
-                .andExpect(model().attribute("credentialResponseDtoList", is(credentialResponseDtoList)))
-                .andExpect(status().isOk());
-        verify(credentialServiceMock).update(argThat(argument ->
-                argument.getUrl().equals(mCredential.getUrl()) &&
-                        argument.getUserName().equals(mCredential.getUserName())
-        ));
+                .andExpect(status().is3xxRedirection());
+        verify(credentialServiceMock).update(argThat(argument -> argument.getUserName().equals(credential.getUserName())));
         verify(credentialServiceMock).getAllAuthenticatedUserCredential();
-
     }
 
     @WithMockUser(username = "z")
@@ -293,7 +245,7 @@ class HomeControllerTest {
 
         mockMvc.perform(get("/home/credential/delete/100")
                 .param("id", "100"))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
         verify(credentialServiceMock).getByCredentialId(100);
         verify(credentialServiceMock).deleteByCredentialIdAndUserId(100);
     }

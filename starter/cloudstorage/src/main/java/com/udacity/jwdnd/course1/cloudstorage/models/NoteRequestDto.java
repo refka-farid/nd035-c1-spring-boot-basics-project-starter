@@ -15,8 +15,8 @@ public class NoteRequestDto {
 
     public NoteRequestDto(Integer noteId, String noteTitle, String noteDescription) {
         this.noteId = noteId;
-        this.noteTitle = noteTitle;
-        this.noteDescription = noteDescription;
+        this.noteTitle = noteTitle.trim();
+        this.noteDescription = noteDescription.trim();
     }
 
     public String getNoteTitle() {
@@ -48,11 +48,11 @@ public class NoteRequestDto {
     }
 
     public Note toNote() {
-        return new Note(noteId, noteTitle, noteDescription, null);
+        return new Note(noteId, noteTitle.trim(), noteDescription.trim(), null);
     }
 
     public static NoteRequestDto fromNote(Note note) {
-        return new NoteRequestDto(note.getNoteId(), note.getNoteTitle(), note.getNoteDescription());
+        return new NoteRequestDto(note.getNoteId(), note.getNoteTitle().trim(), note.getNoteDescription().trim());
     }
 
     @Override

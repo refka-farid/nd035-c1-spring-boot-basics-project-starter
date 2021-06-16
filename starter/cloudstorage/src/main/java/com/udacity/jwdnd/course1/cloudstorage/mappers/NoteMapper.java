@@ -17,6 +17,22 @@ public interface NoteMapper {
     @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle}")
     Note getNoteByNoteTitleAndUserId(Integer userId, String noteTitle);
 
+////    @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle} AND notedescription = #{noteDescription}")
+//    @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle} OR notedescription = #{noteDescription}")
+//    List<Note> getAllByNoteTitleOrNoteDescription(Integer userId, String noteTitle, String noteDescription);
+//
+//
+//        @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle} AND notedescription = #{noteDescription}")
+//    List<Note> getAllByNoteTitleAndNoteDescription(Integer userId, String noteTitle, String noteDescription);
+
+
+
+    @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notedescription = #{noteDescription} ")
+    List<Note> getAllByNoteDescription(int userId,String noteDescription);
+
+    @Select("SELECT * FROM NOTES WHERE userid = #{userId} AND notetitle = #{noteTitle}")
+    List<Note> getAllByNoteTitle(int userId,String noteTitle);
+
     @Select("SELECT * FROM NOTES WHERE userid = #{userId} ")
     List<Note> getAll(int userId);
 

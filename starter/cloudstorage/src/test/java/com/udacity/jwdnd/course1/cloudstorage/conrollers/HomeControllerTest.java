@@ -120,9 +120,7 @@ class HomeControllerTest {
         mockMvc.perform(get("/home/file/delete/100")
                 .contentType(MediaType.parseMediaType("text/plain"))
                 .param("id", "my_File_UzerZ_1.txt"))//todo
-                .andExpect(model().attribute("fileResponseDtoList", is(fileResponseDtoList)))
-                .andExpect(model().attribute("uploadFileResponseDto", is(new UploadFileResponseDto(false))))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
 
     @WithMockUser(username = "z")
@@ -132,7 +130,7 @@ class HomeControllerTest {
         MockMultipartFile mockFile = new MockMultipartFile("fileUpload", "myfile.txt", MediaType.TEXT_PLAIN_VALUE, fileData);
         given(fileServiceMock.addFile(mockFile)).willReturn(true);
         mockMvc.perform(multipart("/home/file/upload").file(mockFile))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
 
 
@@ -157,9 +155,8 @@ class HomeControllerTest {
                 .param("noteDescription", note.getNoteDescription())
         )
                 .andExpect(status().is3xxRedirection());
-        verify(noteServiceMock).addNote(note);
-        verify(noteServiceMock, times(2)).getAllAuthenticatedUserNote();
-
+        verify(noteServiceMock).addNote(argThat(argument -> argument.equals(note)));
+        verify(noteServiceMock).getAllAuthenticatedUserNote();
     }
 
     @WithMockUser(username = "z")
@@ -184,7 +181,6 @@ class HomeControllerTest {
         )
                 .andExpect(status().is3xxRedirection());
         verify(noteServiceMock).update(argThat(argument -> argument.getNoteId().equals(note.getNoteId())));
-
     }
 
     @WithMockUser(username = "z")
@@ -216,7 +212,6 @@ class HomeControllerTest {
                 .andExpect(status().is3xxRedirection());
         verify(credentialServiceMock).add(argThat(argument -> argument.getUserName().equals(credential.getUserName())));
         verify(credentialServiceMock).getAllAuthenticatedUserCredential();
-
     }
 
     @WithMockUser(username = "z")

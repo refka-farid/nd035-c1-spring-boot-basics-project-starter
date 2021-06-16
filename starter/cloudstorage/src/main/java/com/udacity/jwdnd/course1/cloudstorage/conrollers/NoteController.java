@@ -1,7 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.conrollers;
 
 import com.udacity.jwdnd.course1.cloudstorage.conrollers.util.HomeAttributesModel;
-import com.udacity.jwdnd.course1.cloudstorage.entities.Note;
 import com.udacity.jwdnd.course1.cloudstorage.models.NoteRequestDto;
 import com.udacity.jwdnd.course1.cloudstorage.services.credential.CredentialService;
 import com.udacity.jwdnd.course1.cloudstorage.services.file.FileService;
@@ -20,33 +19,35 @@ public class NoteController {
 
     public NoteController(FileTypeLoader fileTypeLoader, FileService fileService, NoteService noteService, CredentialService credentialService) {
         this.noteService = noteService;
-        homeAttributesModel = new HomeAttributesModel(fileTypeLoader,fileService,noteService,credentialService);
+        homeAttributesModel = new HomeAttributesModel(fileTypeLoader, fileService, noteService, credentialService);
     }
 
     @PostMapping("/note/addOrEdit")
     public String addOrEditNote(@ModelAttribute NoteRequestDto noteRequest, Model model, RedirectAttributes redirAttrs) {
-        if (noteRequest.getNoteDescription().length()>= 1000){
-            redirAttrs.addFlashAttribute("error", "Sorry, but Your Note Description was to large !");
+        if (noteRequest.getNoteDescription().length() >= 1000) {
+            redirAttrs.addFlashAttribute("errorNote", "Sorry, but Your Note Description was to large !");
             return "redirect:/home/";
         }
+//        if (noteService.addOrUpdate2(noteRequest.toNote())) {
+//            redirAttrs.addFlashAttribute("successNote", "Your changes was successfully saved.");
+//        } else {
+//            redirAttrs.addFlashAttribute("errorNote", "Note already available!");
+//        }
+
+
         boolean hasNoteId = noteRequest.getNoteId() != null;
+//        var isValidNote = noteService.isValidNote(noteRequest.toNote(), noteRequest.getNoteTitle(), noteRequest.getNoteDescription());
         if (hasNoteId) {
-            editNote(noteRequest);
-            redirAttrs.addFlashAttribute("success", "Your changes was successfully saved.");
+            if (editNote(noteRequest)) {
+                redirAttrs.addFlashAttribute("successNote", "Your changes was successfully saved.");
+            } else {
+                redirAttrs.addFlashAttribute("errorNote", "Note already available!");
+            }
         } else {
-            var noteList = noteService.getAllAuthenticatedUserNote();
-            if(!noteList.isEmpty()){
-                for (Note note:noteList) {
-                    if (note.getNoteTitle().trim().equals(noteRequest.getNoteTitle().trim()) || note.getNoteDescription().trim().equals(noteRequest.getNoteDescription().trim())){
-                        redirAttrs.addFlashAttribute("error", "Note already available!");
-                    }else{
-                        addNote(noteRequest);
-                        redirAttrs.addFlashAttribute("success", "Your New Note was successfully added.");
-                    }
-                }
-            }else{
-                addNote(noteRequest);
-                redirAttrs.addFlashAttribute("success", "Your New Note was successfully added.");
+            if (addNote(noteRequest)){
+                redirAttrs.addFlashAttribute("successNote", "Your New Note was successfully added.");
+            } else {
+                redirAttrs.addFlashAttribute("errorNote", "Note already available!");
             }
         }
         homeAttributesModel.addAllAttributesModel(model);
@@ -54,7 +55,7 @@ public class NoteController {
     }
 
     private boolean addNote(NoteRequestDto noteRequest) {
-       return  noteService.addNote(noteRequest.toNote());
+        return noteService.addNote(noteRequest.toNote());
     }
 
     private boolean editNote(NoteRequestDto noteRequest) {
@@ -66,7 +67,7 @@ public class NoteController {
         var note = noteService.getNoteByNoteId(id);
         noteService.deleteNoteByNoteIdAndUserId(note.getNoteId());
         homeAttributesModel.addAllAttributesModel(model);
-        redirAttrs.addFlashAttribute("success", "Your Note was successfully deleted.");
+        redirAttrs.addFlashAttribute("successNote", "Your Note was successfully deleted.");
         return "redirect:/home/";
     }
 

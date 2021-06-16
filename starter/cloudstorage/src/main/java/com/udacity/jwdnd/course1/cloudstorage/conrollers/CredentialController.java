@@ -31,16 +31,16 @@ public class CredentialController {
         if (hasCredentialId) {
             if (isValidCredential) {
                 editCredential(credentialRequest);
-                redirAttrs.addFlashAttribute("success", "Your changes was successfully saved.");
+                redirAttrs.addFlashAttribute("successCredential", "Your changes was successfully saved.");
             } else {
-                redirAttrs.addFlashAttribute("error", "User already available!");
+                redirAttrs.addFlashAttribute("errorCredential", "User already available!");
             }
         } else {
             if (isValidCredential) {
                 addCredential(credentialRequest);
-                redirAttrs.addFlashAttribute("success", "Your New Credential was successfully added.");
+                redirAttrs.addFlashAttribute("successCredential", "Your New Credential was successfully added.");
             } else {
-                redirAttrs.addFlashAttribute("error", "User already available!");
+                redirAttrs.addFlashAttribute("errorCredential", "User already available!");
             }
         }
         homeAttributesModel.addAllAttributesModel(model);
@@ -59,7 +59,7 @@ public class CredentialController {
     public String getHomeCredentialDelete(Model model, @PathVariable("id") Integer id, RedirectAttributes redirAttrs) {
         var credential = credentialService.getByCredentialId(id);
         credentialService.deleteByCredentialIdAndUserId(credential.getCredentialId());
-        redirAttrs.addFlashAttribute("success", "Your credential was successfully deleted.");
+        redirAttrs.addFlashAttribute("successCredential", "Your credential was successfully deleted.");
         homeAttributesModel.addAllAttributesModel(model);
         return "redirect:/home/";
     }

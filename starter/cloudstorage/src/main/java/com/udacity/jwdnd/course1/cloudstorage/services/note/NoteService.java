@@ -35,10 +35,15 @@ public class NoteService {
     }
 
     public boolean addNote(Note note) {
-        note.setUserId(userService.getAuthenticatedUser().getUserId());
-        note.setNoteTitle(note.getNoteTitle());
-        note.setNoteDescription(note.getNoteDescription());
-        return noteRepository.add(note);
+        var user = userService.getAuthenticatedUser();
+        if (noteRepository.isValidToBeAdded(note.getNoteTitle(), note.getNoteDescription(), user.getUserId())) {
+            note.setUserId(user.getUserId());
+            note.setNoteTitle(note.getNoteTitle());
+            note.setNoteDescription(note.getNoteDescription());
+            return noteRepository.add(note);
+        } else {
+            return false;
+        }
     }
 
     public Note addOrUpdate(Note note) {
@@ -46,12 +51,17 @@ public class NoteService {
     }
 
     public boolean update(Note note) {
-        var noteToUpdate = getNoteByNoteId(note.getNoteId());
-        noteToUpdate.setNoteTitle(note.getNoteTitle());
-        noteToUpdate.setNoteDescription(note.getNoteDescription());
-        noteToUpdate.setUserId(userService.getAuthenticatedUser().getUserId());
-        var updatedNote = addOrUpdate(noteToUpdate);
-        return updatedNote != null;
+        var user = userService.getAuthenticatedUser();
+        if (noteRepository.isValidToBeEdited(note, note.getNoteTitle(), note.getNoteDescription(), user.getUserId())) {
+            var noteToUpdate = getNoteByNoteId(note.getNoteId());
+            noteToUpdate.setNoteTitle(note.getNoteTitle());
+            noteToUpdate.setNoteDescription(note.getNoteDescription());
+            noteToUpdate.setUserId(userService.getAuthenticatedUser().getUserId());
+            var updatedNote = addOrUpdate(noteToUpdate);
+            return updatedNote != null;
+        } else {
+            return false;
+        }
     }
 
     public boolean deleteNoteByNoteIdAndUserId(int noteId) {

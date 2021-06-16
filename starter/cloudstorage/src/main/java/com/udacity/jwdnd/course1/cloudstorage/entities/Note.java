@@ -56,7 +56,7 @@ public class Note {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Note note = (Note) o;
-        return noteTitle.equals(note.noteTitle) && noteDescription.equals(note.noteDescription) && userId.equals(note.userId);
+        return noteTitle.equals(note.noteTitle) && noteDescription.equals(note.noteDescription) ;
     }
 
     @Override

@@ -78,11 +78,10 @@ class NoteServiceTest {
         when(userServiceMock.getAuthenticatedUser()).thenReturn(
                 new User(1, "SALAH", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "Salah", "Yousef")
         );
+        when(noteRepositoryMock.isValidToBeAdded("mySecondNote","mySecondNote MyNoteDescription", 1)).thenReturn(true);
         var note = new Note(100, "mySecondNote", "mySecondNote MyNoteDescription", 1);
         sut.addNote(note);
         verify(userServiceMock).getAuthenticatedUser();
-        verify(noteRepositoryMock).add(argThat(argument ->
-                argument instanceof Note
-        ));
+        verify(noteRepositoryMock).add(argThat(argument -> argument.equals(note)));
     }
 }

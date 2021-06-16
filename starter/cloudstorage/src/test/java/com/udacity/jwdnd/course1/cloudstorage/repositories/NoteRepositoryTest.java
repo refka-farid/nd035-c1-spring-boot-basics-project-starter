@@ -36,6 +36,7 @@ class NoteRepositoryTest {
     private NoteRepository sut;
 
     private Note myTestedNote;
+    private Note myTestedNote2;
     private User user;
 
     @BeforeEach
@@ -44,6 +45,7 @@ class NoteRepositoryTest {
         user = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
         mapperUser.addUser(user);
         myTestedNote = new Note(null, "myFirstNote", "MyNoteDescription", user.getUserId());
+        myTestedNote2 = new Note(null, "mySecondNote", "MySecondNoteDescription", user.getUserId());
     }
 
     @AfterEach
@@ -100,5 +102,84 @@ class NoteRepositoryTest {
         mapperNote.add(myTestedNote);
         var result = sut.getNoteByNoteTileAndUserId(user.getUserId(), myTestedNote.getNoteTitle());
         assertThat(result).isEqualTo(myTestedNote);
+    }
+
+    @Test
+    void isValidForAdd1() {
+        var result = sut.isValidToBeAdded("myFirstNote", "MyNoteDescription", user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void isValidForAdd2() {
+        mapperNote.add(myTestedNote);
+        var result2 = sut.isValidToBeAdded("myFirstNote", "MyNoteDescription", user.getUserId());
+        assertThat(result2).isFalse();
+    }
+
+    @Test
+    void isValidForAdd3() {
+        mapperNote.add(myTestedNote);
+        var result2 = sut.isValidToBeAdded("myFirstNote3", "MyNoteDescription", user.getUserId());
+        assertThat(result2).isFalse();
+    }
+
+    @Test
+    void isValidForAdd4() {
+        mapperNote.add(myTestedNote);
+        var result2 = sut.isValidToBeAdded("myFirstNote", "MyNoteDescriptionDiff", user.getUserId());
+        assertThat(result2).isFalse();
+    }
+
+    @Test
+    void isValidForEdit1() {
+        mapperNote.add(myTestedNote);
+        var result = sut.isValidToBeEdited(myTestedNote,"myFirstNote", "MyNoteDescription", user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+//    myTestedNote = new Note(null, "myFirstNote", "MyNoteDescription", user.getUserId());
+//    myTestedNote2 = new Note(null, "mySecondNote", "MySecondNoteDescription", user.getUserId());
+
+    @Test
+    void isValidForEdit2() {
+        mapperNote.add(myTestedNote);
+        mapperNote.add(myTestedNote2);
+        var result = sut.isValidToBeEdited(myTestedNote2,"myEditedNote", "bla bla bla", user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void isValidForEdit3() {
+        mapperNote.add(myTestedNote);
+        mapperNote.add(myTestedNote2);
+        var result = sut.isValidToBeEdited(myTestedNote, myTestedNote.getNoteTitle(), "bla bla bla", user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void isValidForEdit4() {
+        mapperNote.add(myTestedNote);
+        mapperNote.add(myTestedNote2);
+        var result = sut.isValidToBeEdited(myTestedNote2,"bla bla", "MySecondNoteDescription", user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void addOrUpdate2Test() {
+        myTestedNote2 = new Note(100, "mySecondNote", "MySecondNoteDescription", user.getUserId());
+        mapperNote.add(myTestedNote);
+        var result = sut.addOrUpdate2(myTestedNote,user.getUserId());
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void addOrUpdate3Test() {
+        myTestedNote2 = new Note(100, "mySecondNote", "MySecondNoteDescription", user.getUserId());
+        var myTestedNote3 = new Note(111, "myThirdNote", "MySecondNoteDescription", user.getUserId());
+        mapperNote.add(myTestedNote);
+        mapperNote.add(myTestedNote2);
+        var result = sut.addOrUpdate2(myTestedNote3,user.getUserId());
+        assertThat(result).isFalse();
     }
 }

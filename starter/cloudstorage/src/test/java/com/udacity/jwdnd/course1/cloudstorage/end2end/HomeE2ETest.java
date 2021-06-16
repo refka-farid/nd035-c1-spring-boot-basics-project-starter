@@ -79,8 +79,6 @@ class HomeE2ETest {
         driver.get("http://localhost:" + port + "/signup");
         signupPage.registerUser(user);
         signupPage.submit();
-        signupPage.goToLogin();
-        driver.get("http://localhost:" + port + "/login");
 
         loginPage = new LoginPage(driver);
         loginPage.loginUser("Francis", "azerty");
@@ -95,15 +93,12 @@ class HomeE2ETest {
 
     @Test
     void check_uploadAndViewFileShouldAppearInListFiles() {
-        var user = new SignupRequestDto("kati", "azerty", "kati", "Babier");
-        driver.get("http://localhost:" + port + "/signup");
-        signupPage.registerUser(user);
-        signupPage.submit();
-        signupPage.goToLogin();
+        var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
+        userMapper.addUser(user2);
         driver.get("http://localhost:" + port + "/login");
 
         loginPage = new LoginPage(driver);
-        loginPage.loginUser("kati", "azerty");
+        loginPage.loginUser("lucie", "azerty");
         loginPage.submit();
 
         homePage = new HomePage(driver);
@@ -114,11 +109,55 @@ class HomeE2ETest {
         homePage.viewBtn.click();
         String redirected_url = driver.getCurrentUrl();
         driver.get(redirected_url);
-
         WebDriverHelper.wait_s(driver, 1_000);
         assertThat(isFileDownloaded("/Users/houssemzaier/Downloads", "oiseauTest")).isTrue();
         assertThat(redirected_url).contains("/home");
 
+    }
+
+    @Test
+    void check_uploadBigSizeFileShouldDisplayErrorMessage() {
+        var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
+        userMapper.addUser(user2);
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("lucie", "azerty");
+        loginPage.submit();
+
+        homePage = new HomePage(driver);
+        homePage.fileUploadInput.sendKeys("/Users/houssemzaier/Downloads/parc.jpg");
+        homePage.fileUploadBtn.submit();
+
+        String redirected_url = driver.getCurrentUrl();
+        WebElement errorCrudFileUpload =  driver.findElement(By.id("error-crud-file"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgErrorUpload = errorCrudFileUpload.getText();
+
+        assertThat(redirected_url).contains("/home");
+        assertThat(msgErrorUpload).isEqualTo("Maximum upload size exceeded");
+    }
+
+    @Test
+    void check_uploadNoSelectedFileShouldDisplayErrorMessage() {
+        var user2 = new User(null, "lucie", "HIxi7PbCRU9uIyET6sdGEg==", "8H7jlDi3a2iPiu9ZI1+krA==", "lucie", "Babier");
+        userMapper.addUser(user2);
+        driver.get("http://localhost:" + port + "/login");
+
+        loginPage = new LoginPage(driver);
+        loginPage.loginUser("lucie", "azerty");
+        loginPage.submit();
+
+        homePage = new HomePage(driver);
+        homePage.fileUploadBtn.submit();
+
+        String redirected_url = driver.getCurrentUrl();
+        WebElement errorCrudFileUpload =  driver.findElement(By.id("error-crud-file"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgErrorUpload = errorCrudFileUpload.getText();
+
+        assertThat(redirected_url).contains("/home");
+        assertThat(msgErrorUpload).isEqualTo("Please select a file!");
     }
 
     @Test
@@ -134,9 +173,16 @@ class HomeE2ETest {
         homePage = new HomePage(driver);
         homePage.fileUploadInput.sendKeys("/Users/houssemzaier/Documents/oiseauTest.pdf");
         homePage.fileUploadBtn.submit();
-
         homePage.deleteBtn.click();
+
+        WebDriverHelper.wait_s(driver, 1_000);
+        WebElement successCrudFileDelete =  driver.findElement(By.id("success-crud-file"));
+        WebDriverHelper.wait_s(driver, 1_000);
+        var msgSuccessDelete = successCrudFileDelete.getText();
+
         assertThat(fileMapper.getAll(user2.getUserId())).isEmpty();
+        assertThat(msgSuccessDelete).isEqualTo("Your file was successfully deleted.");
+
     }
 
     @Test
@@ -187,6 +233,7 @@ class HomeE2ETest {
         JavascriptExecutor jse5 = (JavascriptExecutor) driver;
         jse5.executeScript("arguments[0].click();", navNotes);
 
+        WebDriverHelper.wait_s(driver, 1_000);
         WebElement successCrudNoteAdd =  driver.findElement(By.id("success-crud-note"));
         WebDriverHelper.wait_s(driver, 1_000);
         var msgSuccessAdd = successCrudNoteAdd.getText();
@@ -228,8 +275,8 @@ class HomeE2ETest {
         WebDriverHelper.wait_s(driver, 1_000);
         var msgSuccessAddDuplicate = successCrudNoteAddDuplicate.getText();
         assertThat(msgSuccessAddDuplicate).isEqualTo("Note already available!");
-
-        /*Edit Note Test Block*/
+//
+//        /*Edit Note Test Block*/
         WebDriverWait waitEdit = new WebDriverWait(driver, 1000);
         WebElement markerEdit = waitEdit.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab")));
         markerEdit.sendKeys("Notes");
@@ -254,6 +301,7 @@ class HomeE2ETest {
         JavascriptExecutor jseNavToNote = (JavascriptExecutor) driver;
         jseNavToNote.executeScript("arguments[0].click();", navToNote);
 
+        WebDriverHelper.wait_s(driver, 3_000);
         WebElement successCrudNoteEdit =  driver.findElement(By.id("success-crud-note"));
         WebDriverHelper.wait_s(driver, 1_000);
         var msgSuccessEdit = successCrudNoteEdit.getText();
